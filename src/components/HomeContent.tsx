@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import PlusCircleIcon from "@heroicons/react/20/solid/PlusCircleIcon";
 
 const HomeContent: React.FC = () => {
   return (
@@ -19,6 +20,10 @@ const HomeContent: React.FC = () => {
                 See assets
               </a>
             </Link>
+            <button className="bg-zinc-500 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-600">
+              <PlusCircleIcon className="w-5 h-5 mr-2" />
+              Add asset
+            </button>
           </div>
 
           {/* THIS MONTH'S EXPENSES BOX */}
@@ -33,6 +38,10 @@ const HomeContent: React.FC = () => {
                 See expenses
               </a>
             </Link>
+            <button className="bg-zinc-500 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-600">
+              <PlusCircleIcon className="w-5 h-5 mr-2" />
+              Add expenses
+            </button>
           </div>
         </div>
       </div>
