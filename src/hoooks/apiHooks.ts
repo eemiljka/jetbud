@@ -29,5 +29,24 @@ const useFetchExpenses = () => {
     return { expenses, isLoading, error };
 }
 
-export { useFetchExpenses };
+const useDeleteExpense = () => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const deleteExpense = async (id: number) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            await axios.delete(`http://localhost:8080/expenses/${id}`);   
+        }   catch {
+            setError("Failed to delete expense");
+        }   finally {
+            setIsLoading(false);
+        }
+    }
+    return { deleteExpense, isLoading, error };
+
+}
+
+export { useFetchExpenses, useDeleteExpense };
 
