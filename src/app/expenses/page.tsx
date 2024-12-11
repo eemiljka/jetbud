@@ -7,7 +7,11 @@ import { useEffect, useState } from "react";
 
 export default function Expenses() {
   const month = new Date().toLocaleString("default", { month: "long" });
-  const { expenses: initialExpenses, isLoading, error } = useFetchExpenses();
+  const {
+    expenses: initialExpenses,
+    expensesIsLoading,
+    expensesError,
+  } = useFetchExpenses();
   const [expenses, setExpenses] = useState<Expense[]>(initialExpenses);
 
   useEffect(() => {
@@ -42,14 +46,16 @@ export default function Expenses() {
           <h2 className="text-2xl font-semibold mb-4">{month} Expenses</h2>
 
           {/* Loading State */}
-          {isLoading && <p>Loading expenses...</p>}
+          {expensesIsLoading && <p>Loading expenses...</p>}
 
           {/* Error State */}
-          {error && <p className="text-red-500">Error: {error}</p>}
+          {expensesError && (
+            <p className="text-red-500">Error: {expensesError}</p>
+          )}
 
           {/* Expenses List with a delete button */}
-          {!isLoading &&
-            !error &&
+          {!expensesIsLoading &&
+            !expensesError &&
             expenses.map((expense: Expense) => (
               <div key={expense.expense_id} className="flex items-center mb-4">
                 {/* Expense Details */}

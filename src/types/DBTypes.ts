@@ -1,7 +1,7 @@
 type Asset = {
     asset_id: number;
     description: string;
-    asset_sum: number;
+    asset_sum: number | string;
 }
 
 type Expense = {
