@@ -12,6 +12,17 @@ const HomeContent: React.FC = () => {
   const { expenses, expensesIsLoading, expensesError } = useFetchExpenses();
   const { assets, assetsIsLoading, assetsError } = useFetchAssets();
 
+  const totalExpenses =
+    expenses.reduce(
+      (total, expense) => total + Number(expense.expense_sum),
+      0
+    ) || 0;
+
+  const totalAssets =
+    assets.reduce((total, asset) => total + Number(asset.asset_sum), 0) || 0;
+
+  const totalBalance = totalAssets - totalExpenses;
+
   return (
     <main className="flex-frow p-5">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 justify-center">
@@ -32,15 +43,7 @@ const HomeContent: React.FC = () => {
 
           {/* Total Expenses */}
           {!expensesIsLoading && !expensesError && (
-            <h3 className="text-xl mb-4">
-              Total: $
-              {expenses
-                .reduce(
-                  (total, expense) => total + Number(expense.expense_sum),
-                  0
-                )
-                .toFixed(2)}
-            </h3>
+            <h3 className="text-xl mb-4">Total: ${totalExpenses.toFixed(2)}</h3>
           )}
 
           <Link href="/expenses" legacyBehavior>
@@ -68,12 +71,7 @@ const HomeContent: React.FC = () => {
 
           {/* Total Assets */}
           {!assetsIsLoading && !assetsError && (
-            <h3 className="text-xl mb-4">
-              Total: $
-              {assets
-                .reduce((total, asset) => total + Number(asset.asset_sum), 0)
-                .toFixed(2)}
-            </h3>
+            <h3 className="text-xl mb-4">Total: ${totalAssets.toFixed(2)}</h3>
           )}
           <Link href="/asset" legacyBehavior>
             <a className="text-zinc-600 mb-10 block hover:underline">
@@ -85,6 +83,24 @@ const HomeContent: React.FC = () => {
             Add assets
           </button>
         </div>
+      </div>
+
+      {/* Balance Overview */}
+      <div
+        className="bg-white rounded-lg shadow-md p-8 mt-8"
+        style={{ width: "100%" }}
+      >
+        <h2 className="text-2xl font-semibold mb-4">Balance Overview</h2>
+
+        {/* Show Loading/Error State */}
+        {(expensesIsLoading || assetsIsLoading) && <p>Loading balance...</p>}
+        <h3 className="text-xl mb-4">
+          Total balance: ${totalBalance.toFixed(2)}
+        </h3>
+
+        <Link href="/overview" legacyBehavior>
+          <a className="text-zinc-600 mb-10 block hover:underline">See all</a>
+        </Link>
       </div>
     </main>
   );
