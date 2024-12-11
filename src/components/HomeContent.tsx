@@ -1,27 +1,49 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
+import Modal from "react-modal";
 import Link from "next/link";
 import PlusCircleIcon from "@heroicons/react/20/solid/PlusCircleIcon";
 import { useFetchAssets, useFetchExpenses } from "@/hoooks/apiHooks";
+import XCircleIcon from "@heroicons/react/20/solid/XCircleIcon";
 
+// HomeContent component
 const HomeContent: React.FC = () => {
+  // Get the current month
   const date = new Date();
   const month = date.toLocaleString("default", { month: "long" });
 
+  // Fetch expenses and assets
   const { expenses, expensesIsLoading, expensesError } = useFetchExpenses();
   const { assets, assetsIsLoading, assetsError } = useFetchAssets();
 
+  // Calculate total expenses
   const totalExpenses =
     expenses.reduce(
       (total, expense) => total + Number(expense.expense_sum),
       0
     ) || 0;
 
+  // Calculate total assets
   const totalAssets =
     assets.reduce((total, asset) => total + Number(asset.asset_sum), 0) || 0;
 
+  // Calculate total balance
   const totalBalance = totalAssets - totalExpenses;
+
+  // Add expense modal state
+  const [addExpenseModalIsOpen, setAddExpenseModalIsOpen] =
+    React.useState(false);
+
+  // Open add expense modal
+  function openAddExpenseModal() {
+    setAddExpenseModalIsOpen(true);
+  }
+
+  // Close add expense modal
+  function closeAddExpenseModal() {
+    setAddExpenseModalIsOpen(false);
+  }
 
   return (
     <main className="flex-frow p-5">
@@ -45,16 +67,36 @@ const HomeContent: React.FC = () => {
           {!expensesIsLoading && !expensesError && (
             <h3 className="text-xl mb-4">Total: ${totalExpenses.toFixed(2)}</h3>
           )}
-
+          {/* Link to expenses page */}
           <Link href="/expenses" legacyBehavior>
             <a className="text-zinc-600 mb-10 block hover:underline">
               See expenses
             </a>
           </Link>
-          <button className="bg-zinc-500 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-600">
+          {/* Add expenses button */}
+          <button
+            className="bg-zinc-500 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-600"
+            onClick={openAddExpenseModal}
+          >
             <PlusCircleIcon className="w-5 h-5 mr-2" />
             Add expenses
           </button>
+
+          {/* Add Expense Modal */}
+          <Modal
+            isOpen={addExpenseModalIsOpen}
+            onRequestClose={closeAddExpenseModal}
+            contentLabel="Add Expense"
+          >
+            <h2>Add Expense</h2>
+            <button
+              className="bg-zinc-500 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-600"
+              onClick={closeAddExpenseModal}
+            >
+              <XCircleIcon className="w-5 h-5 mr-2" />
+              Close
+            </button>
+          </Modal>
         </div>
         {/* Assets Section */}
         <div
