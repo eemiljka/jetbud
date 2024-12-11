@@ -84,18 +84,53 @@ const HomeContent: React.FC = () => {
 
           {/* Add Expense Modal */}
           <Modal
+            className={"bg-white rounded-lg shadow-md p-8"}
+            style={{
+              overlay: {
+                backgroundColor: "rgba(0, 0, 0, 0.75)",
+              },
+
+              content: {
+                color: "black",
+                width: "500px",
+                height: "250px",
+                margin: "auto",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                padding: "20px",
+                borderRadius: "8px",
+                backgroundColor: "white",
+                overflow: "auto",
+                position: "relative",
+                marginTop: "100px",
+              },
+            }}
             isOpen={addExpenseModalIsOpen}
             onRequestClose={closeAddExpenseModal}
             contentLabel="Add Expense"
           >
+            {/* TODO: Add logic to be able to POST new expenses */}
             <h2>Add Expense</h2>
-            <button
-              className="bg-zinc-500 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-600"
-              onClick={closeAddExpenseModal}
-            >
-              <XCircleIcon className="w-5 h-5 mr-2" />
-              Close
-            </button>
+            <div className="flex space-x-4 mt-4">
+              <button
+                style={{ width: "112px" }}
+                className="bg-zinc-500 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-600"
+                onClick={closeAddExpenseModal}
+              >
+                <XCircleIcon className="w-5 h-5 mr-2" />
+                Cancel
+              </button>
+              <button
+                type="submit"
+                style={{ width: "112px" }}
+                className="bg-zinc-800 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-950"
+                onClick={closeAddExpenseModal}
+              >
+                <PlusCircleIcon className="w-5 h-5 mr-2" />
+                Add
+              </button>
+            </div>
           </Modal>
         </div>
         {/* Assets Section */}
