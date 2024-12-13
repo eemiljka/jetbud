@@ -33,6 +33,12 @@ const Sidebar: React.FC = () => {
           Home
         </Link>
         <Link
+          href="/login"
+          className="block py-2 px-4 text-zinc-600 rounded-md"
+        >
+          Login
+        </Link>
+        <Link
           href="/profile"
           className={`block py-2 px-4 text-zinc-600 rounded-md ${
             isActive("/profile") ? "bg-zinc-200" : "hover:bg-zinc-100"
