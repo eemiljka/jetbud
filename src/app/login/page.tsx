@@ -1,34 +1,41 @@
 "use client";
 
-import React from "react";
-import { Navigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
-// Login Page
 const Login: React.FC = () => {
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [usernameError, setUsernameError] = React.useState("");
-  const [passwordError, setPasswordError] = React.useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-  const onButtonClick = () => {
-    // Clear errors
-    setUsernameError("");
-    setPasswordError("");
-
-    // Validate username
-    if (!username) {
-      setUsernameError("Username is required");
+  const handleLogin = async () => {
+    setError(""); // Clear previous errors
+    if (!username || !password) {
+      setError("Username and password are required");
       return;
     }
 
-    // Validate password
-    if (!password) {
-      setPasswordError("Password is required");
-      return;
-    }
+    try {
+      // Simulate login API call
+      const response = await fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-    // Login logic here
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+
+      const data = await response.json();
+      localStorage.setItem("token", data.token); // Store token
+      router.push("/"); // Redirect to home
+    } catch (err: any) {
+      setError(err.message || "Something went wrong");
+    }
   };
+
   return (
     <div className="flex justify-center items-center h-screen">
       <div
@@ -38,37 +45,27 @@ const Login: React.FC = () => {
         <h2 className="text-2xl font-semibold mb-10 flex justify-center">
           Login
         </h2>
-        <p>Username</p>
         <input
           type="text"
-          className="border border-gray-300 rounded-md w-full p-2"
+          placeholder="Username"
+          className="border border-gray-300 rounded-md w-full p-2 mb-4"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
-        {usernameError && <p className="text-red-500">{usernameError}</p>}
-        <p className="mt-4">Password</p>
         <input
           type="password"
-          className="border border-gray-300 rounded-md w-full p-2"
+          placeholder="Password"
+          className="border border-gray-300 rounded-md w-full p-2 mb-4"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        {passwordError && <p className="text-red-500">{passwordError}</p>}
+        {error && <p className="text-red-500">{error}</p>}
         <button
-          className="bg-blue-500 text-white rounded-md p-2 mt-4 w-full"
-          onClick={onButtonClick}
+          onClick={handleLogin}
+          className="bg-blue-500 text-white rounded-md p-2 w-full"
         >
           Login
         </button>
-        <p className="text-center mt-4">
-          Don&apos;t have an account?{" "}
-          <span
-            className="text-blue-500 cursor-pointer"
-            onClick={() => Navigate("/signup")}
-          >
-            Sign up
-          </span>
-        </p>
       </div>
     </div>
   );

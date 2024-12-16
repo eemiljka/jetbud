@@ -1,7 +1,7 @@
-import { Asset, Expense } from '../types/DBTypes';
+import { Asset, Expense, User } from '../types/DBTypes';
 // TODO: Generate apiHooks 
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 
@@ -94,5 +94,53 @@ const useDeleteAsset = () => {
     return { deleteAsset, assetsIsLoading, assetsError };
 }
 
-export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset };
+/******** USER HOOKS (Not in use...) ********/
+const useUser = () => {
+    const [user, setUser] = useState<User | null>(null);
+    const [userIsLoading, setUserIsLoading] = useState(true);
+    const [userError, setUserError] = useState<string | null>(null);
+
+    const fetchUser = async () => {
+        setUserIsLoading(true);
+        setUserError(null);
+        try {
+            const response = await axios.get<User>("http://localhost:8080/user");
+            setUser(response.data);
+        }   catch {
+            setUserError("Failed to fetch user");
+        }
+        finally {
+            setUserIsLoading(false);
+        }
+    }
+    useEffect(() => {
+        fetchUser();
+    }, []);
+}
+
+const useLogin = () => {
+    const [loginIsLoading, setLoginIsLoading] = React.useState(false);
+    const [loginError, setLoginError] = React.useState<string | null>(null);
+  
+    const login: any = async (username: string, password: string): Promise<string | null> => {
+      setLoginIsLoading(true);
+      setLoginError(null);
+      try {
+        const response = await axios.post("http://localhost:8080/login", {
+          username,
+          password,
+        });
+        return response.data.token;
+      } catch (err: any) {
+        setLoginError(err.response?.data || "Failed to login");
+        return null;
+      } finally {
+        setLoginIsLoading(false);
+      }
+    };
+  
+    return { login, loginIsLoading, loginError };
+  };
+
+export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useUser, useLogin };
 
