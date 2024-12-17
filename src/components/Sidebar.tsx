@@ -61,7 +61,7 @@ const Sidebar: React.FC = () => {
           Browse
         </Link>
       </nav>
-      <section className="mt-auto">
+      <section className="mt-80">
         <button
           className="flex items-center py-2 px-4 text-zinc-600 rounded-md hover:bg-zinc-100 w-full"
           onClick={() => {

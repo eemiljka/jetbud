@@ -1,10 +1,14 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
 import Link from "next/link";
 import PlusCircleIcon from "@heroicons/react/20/solid/PlusCircleIcon";
-import { useFetchAssets, useFetchExpenses } from "@/hoooks/apiHooks";
+import {
+  useFetchAssets,
+  useFetchExpenses,
+  useAddExpense,
+} from "@/hoooks/apiHooks";
 import XCircleIcon from "@heroicons/react/20/solid/XCircleIcon";
 
 // HomeContent component
@@ -14,8 +18,10 @@ const HomeContent: React.FC = () => {
   const month = date.toLocaleString("default", { month: "long" });
 
   // Fetch expenses and assets
-  const { expenses, expensesIsLoading, expensesError } = useFetchExpenses();
+  const { expenses, expensesIsLoading, expensesError, refetch } =
+    useFetchExpenses();
   const { assets, assetsIsLoading, assetsError } = useFetchAssets();
+  const { addExpense, expenseIsLoading, expenseError } = useAddExpense();
 
   // Calculate total expenses
   const totalExpenses =
@@ -35,6 +41,8 @@ const HomeContent: React.FC = () => {
   const [addExpenseModalIsOpen, setAddExpenseModalIsOpen] =
     React.useState(false);
 
+  const [expenseName, setExpenseName] = useState("");
+  const [expenseAmount, setExpenseAmount] = useState("");
   // Open add expense modal
   function openAddExpenseModal() {
     setAddExpenseModalIsOpen(true);
@@ -43,7 +51,36 @@ const HomeContent: React.FC = () => {
   // Close add expense modal
   function closeAddExpenseModal() {
     setAddExpenseModalIsOpen(false);
+    resetForm();
   }
+
+  function resetForm() {
+    setExpenseName("");
+    setExpenseAmount("");
+  }
+
+  const handleAddExpense = async () => {
+    if (!expenseName || !expenseAmount) {
+      alert("Please fill in all fields");
+      return;
+    }
+    try {
+      await addExpense({
+        expense_id: Date.now(), // or any unique identifier
+        description: expenseName,
+        expense_sum: Number(expenseAmount),
+      });
+
+      refetch();
+
+      resetForm();
+      closeAddExpenseModal();
+      alert("Expense added successfully!");
+    } catch (err) {
+      console.error("Error adding expense", expenseError);
+      alert(expenseError || "Failed to add expense");
+    }
+  };
 
   return (
     <main className="flex-frow p-5">
@@ -86,24 +123,14 @@ const HomeContent: React.FC = () => {
           <Modal
             className={"bg-white rounded-lg shadow-md p-8"}
             style={{
-              overlay: {
-                backgroundColor: "rgba(0, 0, 0, 0.75)",
-              },
-
+              overlay: { backgroundColor: "rgba(0, 0, 0, 0.75)" },
               content: {
                 color: "black",
                 width: "500px",
                 height: "250px",
                 margin: "auto",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
                 padding: "20px",
                 borderRadius: "8px",
-                backgroundColor: "white",
-                overflow: "auto",
-                position: "relative",
-                marginTop: "100px",
               },
             }}
             isOpen={addExpenseModalIsOpen}
@@ -112,6 +139,21 @@ const HomeContent: React.FC = () => {
           >
             {/* TODO: Add logic to be able to POST new expenses */}
             <h2>Add Expense</h2>
+            <input
+              type="text"
+              placeholder="Expense Name"
+              value={expenseName}
+              onChange={(e) => setExpenseName(e.target.value)}
+              className="border border-gray-300 rounded-md w-full p-2 mb-4"
+            />
+            <input
+              type="number"
+              placeholder="Expense Amount"
+              value={expenseAmount}
+              onChange={(e) => setExpenseAmount(e.target.value)}
+              className="border border-gray-300 rounded-md w-full p-2 mb-4"
+            />
+
             <div className="flex space-x-4 mt-4">
               <button
                 style={{ width: "112px" }}
@@ -125,7 +167,8 @@ const HomeContent: React.FC = () => {
                 type="submit"
                 style={{ width: "112px" }}
                 className="bg-zinc-800 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-950"
-                onClick={closeAddExpenseModal}
+                onClick={handleAddExpense}
+                disabled={expenseIsLoading}
               >
                 <PlusCircleIcon className="w-5 h-5 mr-2" />
                 Add

@@ -28,7 +28,25 @@ const useFetchExpenses = () => {
         fetchExpenses();
     }, []);
 
-    return { expenses, expensesIsLoading, expensesError };
+    return { expenses, expensesIsLoading, expensesError, refetch: fetchExpenses };
+}
+
+const useAddExpense = () => {
+    const [expenseIsLoading, setExpenseIsLoading] = useState(false);
+    const [expenseError, setExpenseError] = useState<string | null>(null);
+
+    const addExpense = async (expense: Expense) => {
+        setExpenseIsLoading(true);
+        setExpenseError(null);
+        try {
+            await axios.post("http://localhost:8080/expenses", expense);
+        }   catch {
+            setExpenseError("Failed to add expense");
+        }   finally {
+            setExpenseIsLoading(false);
+        }
+    }
+    return { addExpense, expenseIsLoading, expenseError };
 }
 
 const useDeleteExpense = () => {
@@ -142,5 +160,5 @@ const useLogin = () => {
     return { login, loginIsLoading, loginError };
   };
 
-export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useUser, useLogin };
+export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useUser, useLogin, useAddExpense };
 
