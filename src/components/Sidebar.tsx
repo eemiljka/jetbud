@@ -8,6 +8,7 @@ import {
   UserIcon,
   ClockIcon,
   GlobeAltIcon,
+  ArrowLeftStartOnRectangleIcon,
 } from "@heroicons/react/20/solid";
 
 const Sidebar: React.FC = () => {
@@ -60,6 +61,18 @@ const Sidebar: React.FC = () => {
           Browse
         </Link>
       </nav>
+      <section className="mt-auto">
+        <button
+          className="flex items-center py-2 px-4 text-zinc-600 rounded-md hover:bg-zinc-100 w-full"
+          onClick={() => {
+            localStorage.removeItem("token");
+            window.location.href = "/login";
+          }}
+        >
+          <ArrowLeftStartOnRectangleIcon className="w-5 h-5 mr-2" />
+          Log out
+        </button>
+      </section>
     </div>
   );
 };
