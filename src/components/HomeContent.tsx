@@ -8,6 +8,7 @@ import {
   useFetchAssets,
   useFetchExpenses,
   useAddExpense,
+  useAddAsset,
 } from "@/hoooks/apiHooks";
 import XCircleIcon from "@heroicons/react/20/solid/XCircleIcon";
 
@@ -18,10 +19,15 @@ const HomeContent: React.FC = () => {
   const month = date.toLocaleString("default", { month: "long" });
 
   // Fetch expenses and assets
-  const { expenses, expensesIsLoading, expensesError, refetch } =
+  const { expenses, expensesIsLoading, expensesError, refetchExpenses } =
     useFetchExpenses();
-  const { assets, assetsIsLoading, assetsError } = useFetchAssets();
+
   const { addExpense, expenseIsLoading, expenseError } = useAddExpense();
+
+  const { assets, assetsIsLoading, assetsError, refetchAssets } =
+    useFetchAssets();
+
+  const { addAsset, assetIsLoading, assetError } = useAddAsset();
 
   // Calculate total expenses
   const totalExpenses =
@@ -43,15 +49,38 @@ const HomeContent: React.FC = () => {
 
   const [expenseName, setExpenseName] = useState("");
   const [expenseAmount, setExpenseAmount] = useState("");
+
+  // Add asset modal state
+  const [addAssetModalIsOpen, setAddAssetModalIsOpen] = React.useState(false);
+
+  const [assetName, setAssetName] = useState("");
+  const [assetAmount, setAssetAmount] = useState("");
+
   // Open add expense modal
   function openAddExpenseModal() {
     setAddExpenseModalIsOpen(true);
+  }
+
+  // Open add asset modal
+  function openAddAssetModal() {
+    setAddAssetModalIsOpen(true);
   }
 
   // Close add expense modal
   function closeAddExpenseModal() {
     setAddExpenseModalIsOpen(false);
     resetForm();
+  }
+
+  // Close add asset modal
+  function closeAddAssetModal() {
+    setAddAssetModalIsOpen(false);
+    resetAssetForm();
+  }
+
+  function resetAssetForm() {
+    setAssetName("");
+    setAssetAmount("");
   }
 
   function resetForm() {
@@ -66,12 +95,12 @@ const HomeContent: React.FC = () => {
     }
     try {
       await addExpense({
-        expense_id: Date.now(), // or any unique identifier
+        expense_id: Date.now(),
         description: expenseName,
         expense_sum: Number(expenseAmount),
       });
 
-      refetch();
+      refetchExpenses();
 
       resetForm();
       closeAddExpenseModal();
@@ -79,6 +108,29 @@ const HomeContent: React.FC = () => {
     } catch (err) {
       console.error("Error adding expense", expenseError);
       alert(expenseError || "Failed to add expense");
+    }
+  };
+
+  const handleAddAsset = async () => {
+    if (!assetName || !assetAmount) {
+      alert("Please fill all the fields");
+      return;
+    }
+    try {
+      await addAsset({
+        asset_id: Date.now(),
+        description: assetName,
+        asset_sum: Number(assetAmount),
+      });
+
+      refetchAssets();
+
+      resetAssetForm();
+      closeAddAssetModal();
+      alert("Asset added successfully!");
+    } catch (err) {
+      console.error("Error adding asset", assetError);
+      alert(assetError || "Failed to add asset");
     }
   };
 
@@ -198,10 +250,69 @@ const HomeContent: React.FC = () => {
               See assets
             </a>
           </Link>
-          <button className="bg-zinc-500 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-600">
+          <button
+            onClick={openAddAssetModal}
+            className="bg-zinc-500 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-600"
+          >
             <PlusCircleIcon className="w-5 h-5 mr-2" />
             Add assets
           </button>
+          {/* Add assets modal */}
+          <Modal
+            className={"bg-white rounded-lg shadow-md p-8"}
+            style={{
+              overlay: { backgroundColor: "rgba(0, 0, 0, 0.75)" },
+              content: {
+                color: "black",
+                width: "500px",
+                height: "250px",
+                margin: "auto",
+                padding: "20px",
+                borderRadius: "8px",
+              },
+            }}
+            isOpen={addAssetModalIsOpen}
+            onRequestClose={closeAddAssetModal}
+            contentLabel="Add Asset"
+          >
+            {/* TODO: Add logic to be able to POST new assets */}
+            <h2>Add Asset</h2>
+            <input
+              type="text"
+              placeholder="Asset Name"
+              value={assetName}
+              onChange={(e) => setAssetName(e.target.value)}
+              className="border border-gray-300 rounded-md w-full p-2 mb-4"
+            />
+            <input
+              type="number"
+              placeholder="Asset Amount"
+              value={assetAmount}
+              onChange={(e) => setAssetAmount(e.target.value)}
+              className="border border-gray-300 rounded-md w-full p-2 mb-4"
+            />
+
+            <div className="flex space-x-4 mt-4">
+              <button
+                style={{ width: "112px" }}
+                className="bg-zinc-500 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-600"
+                onClick={closeAddAssetModal}
+              >
+                <XCircleIcon className="w-5 h-5 mr-2" />
+                Cancel
+              </button>
+              <button
+                type="submit"
+                style={{ width: "112px" }}
+                className="bg-zinc-800 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-950"
+                onClick={handleAddAsset}
+                disabled={assetIsLoading}
+              >
+                <PlusCircleIcon className="w-5 h-5 mr-2" />
+                Add
+              </button>
+            </div>
+          </Modal>
         </div>
       </div>
 

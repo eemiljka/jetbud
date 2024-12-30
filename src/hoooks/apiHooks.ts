@@ -28,7 +28,7 @@ const useFetchExpenses = () => {
         fetchExpenses();
     }, []);
 
-    return { expenses, expensesIsLoading, expensesError, refetch: fetchExpenses };
+    return { expenses, expensesIsLoading, expensesError, refetchExpenses: fetchExpenses };
 }
 
 const useAddExpense = () => {
@@ -90,8 +90,26 @@ const useFetchAssets = () => {
         fetchAssets();
     }, []);
 
-    return { assets, assetsIsLoading, assetsError };
+    return { assets, assetsIsLoading, assetsError, refetchAssets: fetchAssets };
     
+}
+
+const useAddAsset = () => {
+    const [assetIsLoading, setAssetIsLoading] = useState(false);
+    const [assetError, setAssetError] = useState<string | null>(null);
+
+    const addAsset = async (asset: Asset) => {
+        setAssetIsLoading(true)
+        setAssetError(null);
+        try {
+            await axios.post("http://localhost:8080/assets", asset);
+        }   catch {
+            setAssetError("Failed to add asset");
+        } finally {
+            setAssetIsLoading(false);
+        }
+    }
+    return { addAsset, assetIsLoading, assetError }
 }
 
 const useDeleteAsset = () => {
@@ -160,5 +178,5 @@ const useLogin = () => {
     return { login, loginIsLoading, loginError };
   };
 
-export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useUser, useLogin, useAddExpense };
+export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUser, useLogin, useAddExpense };
 
