@@ -66,6 +66,11 @@ export default function Expenses() {
 
                 {/* Delete Button */}
                 <button
+                  className={`ml-4 px-3 py-1 border border-gray-500 rounded`}
+                >
+                  Modify
+                </button>
+                <button
                   className={`ml-4 px-3 py-1 border border-red-500 rounded ${
                     expenseToDelete === expense.expense_id
                       ? "text-gray-400 cursor-not-allowed"

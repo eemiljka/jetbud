@@ -68,6 +68,24 @@ const useDeleteExpense = () => {
 
 }
 
+const useUpdateExpense = () => {
+    const [expensesIsLoading, setExpensesIsLoading] = useState(false);
+    const [expensesError, setExpensesError] = useState<string | null>(null);
+    
+    const updateExpense = async (id: number) => {
+        setExpensesIsLoading(true);
+        setExpensesError(null);
+        try {
+        await axios.put(`http://localhost:8080/expenses/${id}`);
+    } catch {
+        setExpensesError("Failed to update expense")
+    } finally {
+        setExpensesIsLoading(false);
+    }
+}
+return { updateExpense, expensesIsLoading, expensesError }
+}
+
 /******** ASSETS ********/ 
 const useFetchAssets = () => {
     const [assets, setAssets] = useState<Asset[]>([]);
@@ -178,5 +196,5 @@ const useLogin = () => {
     return { login, loginIsLoading, loginError };
   };
 
-export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUser, useLogin, useAddExpense };
+export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUser, useLogin, useAddExpense, useUpdateExpense };
 
