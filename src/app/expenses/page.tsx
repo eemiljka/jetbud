@@ -1,7 +1,13 @@
 "use client";
 
+import React from "react";
+import Modal from "react-modal";
 import Sidebar from "@/components/Sidebar";
-import { useDeleteExpense, useFetchExpenses } from "@/hoooks/apiHooks";
+import {
+  useDeleteExpense,
+  useFetchExpenses,
+  useUpdateExpense,
+} from "@/hoooks/apiHooks";
 import { Expense } from "@/types/DBTypes";
 import { useEffect, useState } from "react";
 
@@ -11,6 +17,7 @@ export default function Expenses() {
     expenses: initialExpenses,
     expensesIsLoading,
     expensesError,
+    refetchExpenses,
   } = useFetchExpenses();
   const [expenses, setExpenses] = useState<Expense[]>(initialExpenses);
 
@@ -20,6 +27,33 @@ export default function Expenses() {
 
   const [expenseToDelete, setExpenseToDelete] = useState<number | null>(null);
   const { deleteExpense } = useDeleteExpense();
+
+  const [expenseToUpdate, setExpenseToUpdate] = useState<number | null>(null);
+  const {
+    updateExpense,
+    expensesIsLoading: updateIsLoading,
+    expensesError: updateError,
+  } = useUpdateExpense();
+
+  const [expenseId, setExpenseId] = useState(0);
+  const [expenseName, setExpenseName] = useState("");
+  const [expenseAmount, setExpenseAmount] = useState("");
+
+  const [modalIsOpen, setModalIsOpen] = React.useState(false);
+
+  function resetForm() {
+    setExpenseName("");
+    setExpenseAmount("");
+  }
+
+  function openModal() {
+    setModalIsOpen(true);
+  }
+
+  function closeModal() {
+    setModalIsOpen(false);
+    resetForm();
+  }
 
   const handleDelete = async (id: number) => {
     try {
@@ -36,6 +70,25 @@ export default function Expenses() {
     } finally {
       setExpenseToDelete(null);
     }
+  };
+
+  const handleUpdateExpense = async () => {
+    if (!expenseName || !expenseAmount) {
+      alert("Please fill in all fields");
+      return;
+    }
+    try {
+      await updateExpense({
+        expense_id: expenseId,
+        description: expenseName,
+        expense_sum: Number(expenseAmount),
+      });
+      refetchExpenses();
+
+      resetForm();
+      closeModal();
+      alert("Expense updated successfully!");
+    } catch {}
   };
 
   return (
@@ -70,6 +123,38 @@ export default function Expenses() {
                 >
                   Modify
                 </button>
+                <Modal
+                  className={"bg-white rounded-lg shadow-md p-8"}
+                  style={{
+                    overlay: { backgroundColor: "rgba(0, 0, 0, 0.75)" },
+                    content: {
+                      color: "black",
+                      width: "500px",
+                      height: "250px",
+                      margin: "auto",
+                      padding: "20px",
+                      borderRadius: "8px",
+                    },
+                  }}
+                  isOpen={true}
+                  contentLabel="Update expense"
+                >
+                  <h2>Update expense</h2>
+                  <input
+                    type="text"
+                    placeholder="Expense Name"
+                    value={expenseName}
+                    onChange={(e) => setExpenseName(e.target.value)}
+                    className="border border-gray-300 rounded-md w-full p-2 mb-4"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Expense Amount"
+                    value={expenseAmount}
+                    onChange={(e) => setExpenseAmount(e.target.value)}
+                    className="border border-gray-300 rounded-md w-full p-2 mb-4"
+                  />
+                </Modal>
                 <button
                   className={`ml-4 px-3 py-1 border border-red-500 rounded ${
                     expenseToDelete === expense.expense_id

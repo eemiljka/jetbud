@@ -72,11 +72,11 @@ const useUpdateExpense = () => {
     const [expensesIsLoading, setExpensesIsLoading] = useState(false);
     const [expensesError, setExpensesError] = useState<string | null>(null);
     
-    const updateExpense = async (id: number) => {
+    const updateExpense = async (expense: {expense_id: number; description: string; expense_sum: number}) => {
         setExpensesIsLoading(true);
         setExpensesError(null);
         try {
-        await axios.put(`http://localhost:8080/expenses/${id}`);
+        await axios.put(`http://localhost:8080/expenses/${expense.expense_id}`);
     } catch {
         setExpensesError("Failed to update expense")
     } finally {
