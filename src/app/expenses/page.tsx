@@ -10,6 +10,7 @@ import {
 } from "@/hoooks/apiHooks";
 import { Expense } from "@/types/DBTypes";
 import { useEffect, useState } from "react";
+import { PlusCircleIcon, XCircleIcon } from "@heroicons/react/20/solid";
 
 export default function Expenses() {
   const month = new Date().toLocaleString("default", { month: "long" });
@@ -46,7 +47,10 @@ export default function Expenses() {
     setExpenseAmount("");
   }
 
-  function openModal() {
+  function openModal(expense: Expense) {
+    setExpenseId(expense.expense_id);
+    setExpenseName(expense.description);
+    setExpenseAmount(expense.expense_sum.toString());
     setModalIsOpen(true);
   }
 
@@ -88,7 +92,10 @@ export default function Expenses() {
       resetForm();
       closeModal();
       alert("Expense updated successfully!");
-    } catch {}
+    } catch (err) {
+      console.error("Error updating expense", expensesError);
+      alert(expensesError || "Failed to update expense");
+    }
   };
 
   return (
@@ -117,44 +124,13 @@ export default function Expenses() {
                   <p>${Number(expense.expense_sum).toFixed(2)}</p>
                 </div>
 
-                {/* Delete Button */}
+                {/* Modify / Update Button */}
                 <button
+                  onClick={() => openModal(expense)}
                   className={`ml-4 px-3 py-1 border border-gray-500 rounded`}
                 >
                   Modify
                 </button>
-                <Modal
-                  className={"bg-white rounded-lg shadow-md p-8"}
-                  style={{
-                    overlay: { backgroundColor: "rgba(0, 0, 0, 0.75)" },
-                    content: {
-                      color: "black",
-                      width: "500px",
-                      height: "250px",
-                      margin: "auto",
-                      padding: "20px",
-                      borderRadius: "8px",
-                    },
-                  }}
-                  isOpen={true}
-                  contentLabel="Update expense"
-                >
-                  <h2>Update expense</h2>
-                  <input
-                    type="text"
-                    placeholder="Expense Name"
-                    value={expenseName}
-                    onChange={(e) => setExpenseName(e.target.value)}
-                    className="border border-gray-300 rounded-md w-full p-2 mb-4"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Expense Amount"
-                    value={expenseAmount}
-                    onChange={(e) => setExpenseAmount(e.target.value)}
-                    className="border border-gray-300 rounded-md w-full p-2 mb-4"
-                  />
-                </Modal>
                 <button
                   className={`ml-4 px-3 py-1 border border-red-500 rounded ${
                     expenseToDelete === expense.expense_id
@@ -172,6 +148,59 @@ export default function Expenses() {
             ))}
         </main>
       </div>
+      <Modal
+        className={"bg-white rounded-lg shadow-md p-8"}
+        style={{
+          overlay: { backgroundColor: "rgba(0, 0, 0, 0.75)" },
+          content: {
+            color: "black",
+            width: "500px",
+            height: "250px",
+            margin: "auto",
+            padding: "20px",
+            borderRadius: "8px",
+          },
+        }}
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Update expense"
+      >
+        <h2>Update expense</h2>
+        <input
+          type="text"
+          placeholder="Expense Name"
+          value={expenseName}
+          onChange={(e) => setExpenseName(e.target.value)}
+          className="border border-gray-300 rounded-md w-full p-2 mb-4"
+        />
+        <input
+          type="number"
+          placeholder="Expense Amount"
+          value={expenseAmount}
+          onChange={(e) => setExpenseAmount(e.target.value)}
+          className="border border-gray-300 rounded-md w-full p-2 mb-4"
+        />
+        <div className="flex space-x-4 mt-4">
+          <button
+            style={{ width: "112px" }}
+            className="bg-zinc-500 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-600"
+            onClick={closeModal}
+          >
+            <XCircleIcon className="w-5 h-5 mr-2" />
+            Cancel
+          </button>
+          <button
+            type="submit"
+            style={{ width: "112px" }}
+            className="bg-zinc-800 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-950"
+            onClick={handleUpdateExpense}
+            disabled={updateIsLoading}
+          >
+            <PlusCircleIcon className="w-5 h-5 mr-2" />
+            Update
+          </button>
+        </div>
+      </Modal>
     </>
   );
 }
