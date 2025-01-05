@@ -127,7 +127,11 @@ export default function Expenses() {
                 {/* Modify / Update Button */}
                 <button
                   onClick={() => openModal(expense)}
-                  className={`ml-4 px-3 py-1 border border-gray-500 rounded`}
+                  className={`ml-4 px-3 py-1 border border-gray-500 rounded ${
+                    expenseToUpdate === expense.expense_id
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-zinc-500 hover:bg-zinc-500 hover:text-white"
+                  }`}
                 >
                   Modify
                 </button>

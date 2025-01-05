@@ -76,7 +76,10 @@ const useUpdateExpense = () => {
         setExpensesIsLoading(true);
         setExpensesError(null);
         try {
-        await axios.put(`http://localhost:8080/expenses/${expense.expense_id}`);
+        await axios.put(`http://localhost:8080/expenses/${expense.expense_id}`, {
+            description: expense.description,
+            expense_sum: expense.expense_sum
+        });
     } catch {
         setExpensesError("Failed to update expense")
     } finally {
