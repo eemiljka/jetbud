@@ -113,7 +113,7 @@ export default function Expenses() {
             <p className="text-red-500">Error: {expensesError}</p>
           )}
 
-          {/* Expenses List with a delete button */}
+          {/* Expenses List with a delete and modify button */}
           {!expensesIsLoading &&
             !expensesError &&
             expenses.map((expense: Expense) => (

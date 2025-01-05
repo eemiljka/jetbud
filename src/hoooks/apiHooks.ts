@@ -151,6 +151,27 @@ const useDeleteAsset = () => {
     return { deleteAsset, assetsIsLoading, assetsError };
 }
 
+const useUpdateAsset = () => {
+    const [assetsIsLoading, setAssetsIsLoading] = useState(false);
+    const [assetsError, setAssetsError] = useState<string | null>(null);
+    
+    const updateAsset = async (asset: {asset_id: number; description: string; asset_sum: number}) => {
+        setAssetsIsLoading(true);
+        setAssetsError(null);
+        try {
+        await axios.put(`http://localhost:8080/assets/${asset.asset_id}`, {
+            description: asset.description,
+            asset_sum: asset.asset_sum
+        });
+    } catch {
+        setAssetsError("Failed to update expense")
+    } finally {
+        setAssetsIsLoading(false);
+    }
+}
+return { updateAsset, assetsIsLoading, assetsError }
+}
+
 /******** USER HOOKS (Not in use...) ********/
 const useUser = () => {
     const [user, setUser] = useState<User | null>(null);
@@ -199,5 +220,5 @@ const useLogin = () => {
     return { login, loginIsLoading, loginError };
   };
 
-export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUser, useLogin, useAddExpense, useUpdateExpense };
+export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useUser, useLogin, useAddExpense, useUpdateExpense };
 
