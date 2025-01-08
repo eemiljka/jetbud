@@ -1,4 +1,4 @@
-## Getting Started
+## How to run application
 1. Clone this repository
 2. Install the dependencies `npm install`
 3. Clone [backend](https://github.com/eemiljka/jetbud-server), and install its dependencies
