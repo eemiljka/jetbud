@@ -1,8 +1,11 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
-
-First, run the development server:
+1. Clone this repository
+2. Install the dependencies `npm install`
+3. Clone [backend](https://github.com/eemiljka/jetbud-server), and install its dependencies
+4. Create a database (Updating database instructions soon...)
+5. Run frontend and backend with
 
 ```bash
 npm run dev
@@ -16,21 +19,21 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Login screen
+![login](https://github.com/user-attachments/assets/8071c7fb-a6d8-480d-9ee6-858b91aaddf9)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Home page once user is logged in
+![home-page](https://github.com/user-attachments/assets/b5ce6eaf-e17e-44c1-9ee3-f56b8db712d8)
 
-## Learn More
+## Add expense modal
+![add-expense](https://github.com/user-attachments/assets/1ec22be3-1d3b-4c13-9248-ef22619f0e1b)
 
-To learn more about Next.js, take a look at the following resources:
+## Add asset modal
+![add-asset](https://github.com/user-attachments/assets/5667bafe-c1dc-4696-800c-86d2d473fe40)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Expenses page
+![expenses](https://github.com/user-attachments/assets/e02c860b-2704-4f7d-b1be-f447698af262)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Home page after adding expenses and assets
+![home-page-2](https://github.com/user-attachments/assets/4bd7b1f2-1735-4dd1-9aae-63a8904a9f74)
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
