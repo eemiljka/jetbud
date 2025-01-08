@@ -5,17 +5,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 2. Install the dependencies `npm install`
 3. Clone [backend](https://github.com/eemiljka/jetbud-server), and install its dependencies
 4. Create a database (Updating database instructions soon...)
-5. Run frontend and backend with
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+5. Run frontend and backend with `npm run dev`
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
