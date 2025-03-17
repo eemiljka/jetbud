@@ -4,25 +4,26 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const Login: React.FC = () => {
+const Register: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     setError(""); // Clear previous errors
-    if (!username || !password) {
-      setError("Username and password are required");
+    if (!username || !password || !email) {
+      setError("Email, username and password are required to login.");
       return;
     }
 
     try {
       // Simulate login API call
-      const response = await fetch("http://localhost:8080/login", {
+      const response = await fetch("http://localhost:8080/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, email }),
       });
 
       if (!response.ok) {
@@ -44,8 +45,15 @@ const Login: React.FC = () => {
         style={{ width: "500px" }}
       >
         <h2 className="text-2xl font-semibold mb-10 flex justify-center">
-          Login
+          Register
         </h2>
+        <input
+          type="text"
+          placeholder="Email"
+          className="border border-gray-300 rounded-md w-full p-2 mb-4"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
         <input
           type="text"
           placeholder="Username"
@@ -62,20 +70,14 @@ const Login: React.FC = () => {
         />
         {error && <p className="text-red-500">{error}</p>}
         <button
-          onClick={handleLogin}
-          className="bg-blue-500 text-white rounded-md p-2 w-full hover:bg-blue-600"
-        >
-          Login
-        </button>
-        <Link
-          href={"/register"}
-          className="bg-zinc-500 text-white text-center rounded-md p-2 w-full block hover:bg-zinc-600 mt-2"
+          onClick={handleRegister}
+          className="bg-green-500 text-white rounded-md p-2 w-full hover:bg-green-600"
         >
           Register
-        </Link>
+        </button>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default Register;

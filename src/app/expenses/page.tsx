@@ -135,6 +135,7 @@ export default function Expenses() {
                 >
                   Modify
                 </button>
+                {/* Delete button */}
                 <button
                   className={`ml-4 px-3 py-1 border border-red-500 rounded ${
                     expenseToDelete === expense.expense_id
