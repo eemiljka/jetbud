@@ -8,6 +8,7 @@ type Expense = {
     expense_id: number;
     description: string;
     expense_sum: number | string;
+    user_id: number;
   };
 
 type User = {

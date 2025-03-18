@@ -98,6 +98,7 @@ const HomeContent: React.FC = () => {
         expense_id: Date.now(),
         description: expenseName,
         expense_sum: Number(expenseAmount),
+        user_id: 1, // Replace with the actual user_id value
       });
 
       refetchExpenses();

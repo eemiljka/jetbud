@@ -3,6 +3,7 @@ import { Asset, Expense, User } from '../types/DBTypes';
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { headers } from 'next/headers';
 
 
 /******** EXPENSES ********/ 
@@ -15,7 +16,12 @@ const useFetchExpenses = () => {
         expensesSetIsLoading(true);
         expensesSetError(null);
         try {
-            const response = await axios.get<Expense[]>("http://localhost:8080/expenses");
+            const token = localStorage.getItem("token");
+            const response = await axios.get<Expense[]>("http://localhost:8080/expenses", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }}
+            );
             setExpenses(response.data);
         }   catch {
             expensesSetError("Failed to fetch expenses");
