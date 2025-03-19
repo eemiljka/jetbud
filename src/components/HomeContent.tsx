@@ -11,6 +11,7 @@ import {
   useAddAsset,
 } from "@/hoooks/apiHooks";
 import XCircleIcon from "@heroicons/react/20/solid/XCircleIcon";
+import getUserIdFromToken from "@/lib/middlewares";
 
 // HomeContent component
 const HomeContent: React.FC = () => {
@@ -94,11 +95,12 @@ const HomeContent: React.FC = () => {
       return;
     }
     try {
+      const userId = getUserIdFromToken();
       await addExpense({
         expense_id: Date.now(),
         description: expenseName,
         expense_sum: Number(expenseAmount),
-        user_id: 1, // Replace with the actual user_id value
+        user_id: userId,
       });
 
       refetchExpenses();

@@ -4,6 +4,7 @@ import { Asset, Expense, User } from '../types/DBTypes';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { headers } from 'next/headers';
+import getUserIdFromToken from '@/lib/middlewares';
 
 
 /******** EXPENSES ********/ 
