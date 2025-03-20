@@ -42,7 +42,10 @@ const useAddExpense = () => {
         setExpenseIsLoading(true);
         setExpenseError(null);
         try {
-            await axios.post("http://localhost:8080/expenses", expense);
+            const token = localStorage.getItem("token");
+            await axios.post("http://localhost:8080/expenses", expense, {
+                headers: {Authorization: `Bearer ${token}`}
+            });
         }   catch {
             setExpenseError("Failed to add expense");
         }   finally {
