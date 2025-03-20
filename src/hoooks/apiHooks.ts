@@ -8,19 +8,22 @@ import axios from 'axios';
 /******** EXPENSES ********/ 
 const useFetchExpenses = () => {
     const [expenses, setExpenses] = useState<Expense[]>([]);
-    const [expensesIsLoading, expensesSetIsLoading] = useState(true);
-    const [expensesError, expensesSetError] = useState<string | null>(null);
+    const [expensesIsLoading, setExpensesIsLoading] = useState(true);
+    const [expensesError, setExpensesError] = useState<string | null>(null);
 
     const fetchExpenses = async () => {
-        expensesSetIsLoading(true);
-        expensesSetError(null);
+        setExpensesIsLoading(true);
+        setExpensesError(null);
         try {
-            const response = await axios.get<Expense[]>("http://localhost:8080/expenses");
+            const token = localStorage.getItem("token");
+            const response = await axios.get<Expense[]>("http://localhost:8080/expenses", {
+                headers: {Authorization: `Bearer ${token}`},
+            })
             setExpenses(response.data);
         }   catch {
-            expensesSetError("Failed to fetch expenses");
+            setExpensesError("Failed to fetch expenses");
         }   finally {
-            expensesSetIsLoading(false);
+            setExpensesIsLoading(false);
         }
     }
 
@@ -50,18 +53,18 @@ const useAddExpense = () => {
 }
 
 const useDeleteExpense = () => {
-    const [expensesIsLoading, expensesSetIsLoading] = useState(false);
-    const [expensesError, expensesSetError] = useState<string | null>(null);
+    const [expensesIsLoading, setExpensesIsLoading] = useState(false);
+    const [expensesError, setExpensesError] = useState<string | null>(null);
 
     const deleteExpense = async (id: number) => {
-        expensesSetIsLoading(true);
-        expensesSetError(null);
+        setExpensesIsLoading(true);
+        setExpensesError(null);
         try {
             await axios.delete(`http://localhost:8080/expenses/${id}`);   
         }   catch {
-            expensesSetError("Failed to delete expense");
+            setExpensesError("Failed to delete expense");
         }   finally {
-            expensesSetIsLoading(false);
+            setExpensesIsLoading(false);
         }
     }
     return { deleteExpense, expensesIsLoading, expensesError };
@@ -92,19 +95,22 @@ return { updateExpense, expensesIsLoading, expensesError }
 /******** ASSETS ********/ 
 const useFetchAssets = () => {
     const [assets, setAssets] = useState<Asset[]>([]);
-    const [assetsIsLoading, assetsSetIsLoading] = useState(true);
-    const [assetsError, assetsSetError] = useState<string | null>(null);
+    const [assetsIsLoading, setAssetsIsLoading] = useState(true);
+    const [assetsError, setAssetsError] = useState<string | null>(null);
 
     const fetchAssets = async () => {
-        assetsSetIsLoading(true);
-        assetsSetError(null);
+        setAssetsIsLoading(true);
+        setAssetsError(null);
         try {
-            const response = await axios.get<Asset[]>("http://localhost:8080/assets");
+            const token = localStorage.getItem("token");
+            const response = await axios.get<Asset[]>("http://localhost:8080/assets", {
+                headers: {Authorization: `Bearer ${token}`},
+            })
             setAssets(response.data);
         }   catch {
-            assetsSetError("Failed to fetch assets");
+            setAssetsError("Failed to fetch assets");
         }   finally {
-            assetsSetIsLoading(false);
+            setAssetsIsLoading(false);
         }
     }
     useEffect(() => {
@@ -134,18 +140,18 @@ const useAddAsset = () => {
 }
 
 const useDeleteAsset = () => {
-    const [assetsIsLoading, assetsSetIsLoading] = useState(false);
-    const [assetsError, assetsSetError] = useState<string | null>(null);
+    const [assetsIsLoading, setAssetsIsLoading] = useState(false);
+    const [assetsError, setAssetsError] = useState<string | null>(null);
 
     const deleteAsset = async (id: number) => {
-        assetsSetIsLoading(true);
-        assetsSetError(null);
+        setAssetsIsLoading(true);
+        setAssetsError(null);
         try {
             await axios.delete(`http://localhost:8080/assets/${id}`);
         }   catch {
-            assetsSetError("Failed to delete asset");
+            setAssetsError("Failed to delete asset");
         }   finally {
-            assetsSetIsLoading(false);
+            setAssetsIsLoading(false);
         }
     }
     return { deleteAsset, assetsIsLoading, assetsError };
@@ -200,15 +206,19 @@ const useLogin = () => {
     const [loginIsLoading, setLoginIsLoading] = React.useState(false);
     const [loginError, setLoginError] = React.useState<string | null>(null);
   
-    const login: any = async (username: string, password: string): Promise<string | null> => {
+    const login = async (email: string, password: string): Promise<string | null> => {
       setLoginIsLoading(true);
       setLoginError(null);
       try {
         const response = await axios.post("http://localhost:8080/login", {
-          username,
+          email,
           password,
         });
-        return response.data.token;
+        const token = response.data.token;
+        if (token) {
+            localStorage.setItem("token", token)
+        }
+        return token;
       } catch (err: any) {
         setLoginError(err.response?.data || "Failed to login");
         return null;
@@ -220,5 +230,10 @@ const useLogin = () => {
     return { login, loginIsLoading, loginError };
   };
 
-export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useUser, useLogin, useAddExpense, useUpdateExpense };
+// logout
+const useLogout = () => {
+    localStorage.removeItem("token");
+}
+
+export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useUser, useLogin, useAddExpense, useUpdateExpense, useLogout };
 

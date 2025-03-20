@@ -1,29 +1,24 @@
 "use client";
 
-import { FormEvent } from "react";
+import React, { FormEvent } from "react";
+import { useLogin } from "@/hoooks/apiHooks";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 const Login: React.FC = () => {
   const router = useRouter();
+  const { login, loginIsLoading, loginError } = useLogin();
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email")?.toString() || "";
+    const password = formData.get("password")?.toString() || "";
 
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get("email");
-    const password = formData.get("password");
-
-    const response = await fetch("http://localhost:8080/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (response.ok) {
+    const token = await login(email, password);
+    if (token) {
       router.push("/");
     } else {
-      console.log("login response not ok");
+      console.error("Login failed");
     }
   };
 
@@ -31,7 +26,8 @@ const Login: React.FC = () => {
     <form onSubmit={handleSubmit}>
       <input type="email" name="email" placeholder="Email" required />
       <input type="password" name="password" placeholder="Password" required />
-      <button type="submit"></button>
+      <button type="submit">Login</button>
+      {loginError && <p style={{ color: "red" }}>{loginError}</p>}
     </form>
   );
 };
