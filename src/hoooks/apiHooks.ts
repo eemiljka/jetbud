@@ -132,7 +132,10 @@ const useAddAsset = () => {
         setAssetIsLoading(true)
         setAssetError(null);
         try {
-            await axios.post("http://localhost:8080/assets", asset);
+            const token = localStorage.getItem("token");
+            await axios.post("http://localhost:8080/assets", asset, {
+                headers: {Authorization: `Bearer ${token}`}
+            });
         }   catch {
             setAssetError("Failed to add asset");
         } finally {
