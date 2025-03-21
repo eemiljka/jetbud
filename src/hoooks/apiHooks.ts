@@ -184,6 +184,30 @@ const useUpdateAsset = () => {
 return { updateAsset, assetsIsLoading, assetsError }
 }
 
+// users
+const useGetUserInfo = () => {
+    const [profileInfo, setProfileInfo] = useState<User[]>([])
+    const [profileIsLoading, setProfileIsLoading] = useState(true);
+    const [profileError, setProfileError] = useState<string | null>(null);
+
+    const fetchUserInfo = async () => {
+        setProfileIsLoading(true);
+        setProfileError(null);
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.get<User[]>("http://localhost:8080/user", {
+                headers: {Authorization: `Bearer ${token}`}
+            })
+            setProfileInfo(response.data);
+        } catch {
+            setProfileError("Failed to fetch profile info.")
+        } finally {
+            setProfileIsLoading(false);
+        }
+    }
+    return {profileInfo, profileError, profileIsLoading}
+}
+
 // login
 const useLogin = () => {
     const [loginIsLoading, setLoginIsLoading] = React.useState(false);
@@ -240,5 +264,5 @@ const useRegister = () => {
     return {register, registerIsLoading, registerError};
 }
 
-export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useLogin, useAddExpense, useUpdateExpense, useRegister };
+export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useLogin, useAddExpense, useUpdateExpense, useRegister, useGetUserInfo };
 
