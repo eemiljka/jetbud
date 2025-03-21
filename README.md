@@ -43,7 +43,9 @@ CREATE TABLE assets(
 
 ```
 
-5. Run frontend and backend with `npm run dev`
+5. Copy .env-sample's structure, make a file called .env and paste the structure there. Fill in the enviroment variables and save.
+
+6. Run frontend and backend with `npm run dev`
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
