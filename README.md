@@ -19,14 +19,14 @@ CREATE DATABASE jetbud;
 USE jetbud;
 
 CREATE TABLE users(
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE expenses(
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    expense_id INT AUTO_INCREMENT PRIMARY KEY,
     description VARCHAR(255) NOT NULL,
     expense_sum DECIMAL(10,2) NOT NULL,
     user_id INT(11) NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE expenses(
 );
 
 CREATE TABLE assets(
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    asset_id INT AUTO_INCREMENT PRIMARY KEY,
     description VARCHAR(255) NOT NULL,
     asset_sum VARCHAR(255) NOT NULL,
     user_id VARCHAR(255) NOT NULL,
