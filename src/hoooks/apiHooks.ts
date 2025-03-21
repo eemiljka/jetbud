@@ -184,30 +184,7 @@ const useUpdateAsset = () => {
 return { updateAsset, assetsIsLoading, assetsError }
 }
 
-/******** USER HOOKS (Not in use...) ********/
-const useUser = () => {
-    const [user, setUser] = useState<User | null>(null);
-    const [userIsLoading, setUserIsLoading] = useState(true);
-    const [userError, setUserError] = useState<string | null>(null);
-
-    const fetchUser = async () => {
-        setUserIsLoading(true);
-        setUserError(null);
-        try {
-            const response = await axios.get<User>("http://localhost:8080/user");
-            setUser(response.data);
-        }   catch {
-            setUserError("Failed to fetch user");
-        }
-        finally {
-            setUserIsLoading(false);
-        }
-    }
-    useEffect(() => {
-        fetchUser();
-    }, []);
-}
-
+// login
 const useLogin = () => {
     const [loginIsLoading, setLoginIsLoading] = React.useState(false);
     const [loginError, setLoginError] = React.useState<string | null>(null);
@@ -236,10 +213,32 @@ const useLogin = () => {
     return { login, loginIsLoading, loginError };
   };
 
-// logout
-const useLogout = () => {
-    localStorage.removeItem("token");
+// register
+const useRegister = () => {
+    const [registerIsLoading, setRegisterIsLoading] = React.useState(false);
+    const [registerError, setRegisterError] = React.useState<string | null>(null);
+
+    const register = async (email: string, username: string, password: string): Promise<string | null> => {
+        setRegisterIsLoading(true);
+        setRegisterError(null);
+        try {
+            const response = await axios.post("http://localhost:8080/register", {
+                email, username, password
+            })
+            const token = response.data.token;
+            if (token) {
+                localStorage.setItem("token", token)
+            }
+            return token;
+        } catch (err: any) {
+            setRegisterError(err.response?.data || "Failed to register");
+            return null;
+        } finally {
+            setRegisterIsLoading(false);
+        }
+    }
+    return {register, registerIsLoading, registerError};
 }
 
-export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useUser, useLogin, useAddExpense, useUpdateExpense, useLogout };
+export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useLogin, useAddExpense, useUpdateExpense, useRegister };
 
