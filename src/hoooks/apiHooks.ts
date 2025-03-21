@@ -205,7 +205,7 @@ const useGetUserInfo = () => {
             setProfileIsLoading(false);
         }
     }
-    return {profileInfo, profileError, profileIsLoading}
+    return {profileInfo, profileError, profileIsLoading, fetchUserInfo}
 }
 
 // login

@@ -2,10 +2,19 @@
 
 import Sidebar from "@/components/Sidebar";
 import Divider from "@/components/Divider";
-import React from "react";
+import React, { useEffect } from "react";
 import { PencilIcon } from "@heroicons/react/20/solid";
+import { useGetUserInfo } from "@/hoooks/apiHooks";
+import { User } from "@/types/DBTypes";
 
-export default function Profile() {
+const Profile: React.FC = () => {
+  const { profileInfo, profileIsLoading, profileError, fetchUserInfo } =
+    useGetUserInfo();
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, []);
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />
@@ -21,7 +30,20 @@ export default function Profile() {
             </h2>
             <p>Name</p>
             <div className="flex justify-between">
-              <h3 className="text-xl font-semibold">John Doe</h3>
+              <h3 className="text-xl font-semibold">
+                {" "}
+                {/*Loading state*/}
+                {profileIsLoading && <p>Loading username...</p>}
+                {/*Error state*/}
+                {profileError && (
+                  <p className="text-red-500">Error: {profileError}</p>
+                )}
+                {!profileIsLoading &&
+                  !profileError &&
+                  profileInfo.map((user: User) => (
+                    <div key={user.user_id}>{user.username}</div>
+                  ))}
+              </h3>
               <button className="hover:bg-zinc-100 rounded-md p-1">
                 <PencilIcon className="w-5 h-5 text-zinc-600" />
               </button>
@@ -29,7 +51,20 @@ export default function Profile() {
             <Divider />
             <p className="mt-10">Email</p>
             <div className="flex justify-between">
-              <h3 className="text-xl font-semibold">john.doe@example.com</h3>
+              <h3 className="text-xl font-semibold">
+                {" "}
+                {/*Loading state*/}
+                {profileIsLoading && <p>Loading email...</p>}
+                {/*Error state*/}
+                {profileError && (
+                  <p className="text-red-500">Error: {profileError}</p>
+                )}
+                {!profileIsLoading &&
+                  !profileError &&
+                  profileInfo.map((user: User) => (
+                    <div key={user.user_id}>{user.email}</div>
+                  ))}
+              </h3>
               <button className="hover:bg-zinc-100 rounded-md p-1">
                 <PencilIcon className="w-5 h-5 text-zinc-600" />
               </button>
@@ -47,4 +82,6 @@ export default function Profile() {
       </main>
     </div>
   );
-}
+};
+
+export default Profile;

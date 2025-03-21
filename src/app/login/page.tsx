@@ -55,7 +55,7 @@ const Login: React.FC = () => {
           </button>
           {loginError && <p style={{ color: "red" }}>{loginError}</p>}
           <Link href="/register" legacyBehavior>
-            <a className="text-zinc-600 mt-6 block hover:underline flex justify-center">
+            <a className="text-zinc-600 mt-6 hover:underline flex justify-center">
               Not a member? Register here!
             </a>
           </Link>
