@@ -75,6 +75,11 @@ const Register: React.FC = () => {
         >
           Register
         </button>
+        <Link href="/login" legacyBehavior>
+          <a className="text-zinc-600 mt-6 flex justify-center hover:underline">
+            Already a member? Sign in!
+          </a>
+        </Link>
       </div>
     </div>
   );
