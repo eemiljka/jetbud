@@ -1,4 +1,4 @@
-import { Asset, Expense, User } from '../types/DBTypes';
+import { Asset, Expense, User, Year } from '../types/DBTypes';
 // TODO: Generate apiHooks 
 
 import React, { useEffect, useState } from 'react';
@@ -208,6 +208,32 @@ const useGetUserInfo = () => {
     return {profileInfo, profileError, profileIsLoading, fetchUserInfo}
 }
 
+
+const useGetYears = () => {
+    const [years, setYears] = useState([]);
+    const [yearsIsLoading, setYearsIsLoading] = useState(true);
+    const [yearsError, setYearsError] = useState<string | null>(null);
+  
+    const fetchYears = async () => {
+      setYearsIsLoading(true);
+      setYearsError(null);
+  
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:8080/expense-years', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setYears(response.data);
+      } catch {
+        setYearsError('Failed to fetch years');
+      } finally {
+        setYearsIsLoading(false);
+      }
+    };
+  
+    return { years, yearsIsLoading, yearsError, fetchYears };
+  };
+
 // login
 const useLogin = () => {
     const [loginIsLoading, setLoginIsLoading] = React.useState(false);
@@ -264,5 +290,5 @@ const useRegister = () => {
     return {register, registerIsLoading, registerError};
 }
 
-export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useLogin, useAddExpense, useUpdateExpense, useRegister, useGetUserInfo };
+export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useLogin, useAddExpense, useUpdateExpense, useRegister, useGetUserInfo, useGetYears };
 

@@ -17,4 +17,8 @@ type User = {
     password: string;
 }
 
-export type { Asset, Expense, User };
+type Year = {
+    year: number
+}
+
+export type { Asset, Expense, User, Year };

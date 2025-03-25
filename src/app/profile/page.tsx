@@ -28,7 +28,7 @@ const Profile: React.FC = () => {
             <h2 className="text-2xl font-semibold mb-10 flex justify-center">
               Profile
             </h2>
-            <p>Name</p>
+            <p>Username</p>
             <div className="flex justify-between">
               <h3 className="text-xl font-semibold">
                 {" "}
