@@ -234,6 +234,32 @@ const useGetYears = () => {
     return { years, yearsIsLoading, yearsError, fetchYears };
   };
 
+  const useGetMonths = () => {
+    const [months, setMonths] = useState([]);
+    const [monthsIsLoading, setMonthsIsLoading] = useState(false);
+    const [monthsError, setMonthsError] = useState<string | null>(null);
+  
+    const fetchMonths = async (year: any) => {
+      setMonthsIsLoading(true);
+      setMonthsError(null);
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:8080/expense-months", {
+          params: { year },
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log("Fetched months: ", response.data);
+        setMonths(response.data);
+      } catch {
+        setMonthsError("Failed to fetch months");
+      } finally {
+        setMonthsIsLoading(false);
+      }
+    };
+  
+    return { months, monthsIsLoading, monthsError, fetchMonths };
+  };
+
 // login
 const useLogin = () => {
     const [loginIsLoading, setLoginIsLoading] = React.useState(false);
@@ -290,5 +316,5 @@ const useRegister = () => {
     return {register, registerIsLoading, registerError};
 }
 
-export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useLogin, useAddExpense, useUpdateExpense, useRegister, useGetUserInfo, useGetYears };
+export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useLogin, useAddExpense, useUpdateExpense, useRegister, useGetUserInfo, useGetYears, useGetMonths };
 
