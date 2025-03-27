@@ -7,6 +7,7 @@ import {
   useGetExpenseMonths,
   useGetExpenseDays,
   useGetOneDaysExpenses,
+  useGetOneMonthsExpenses,
 } from "@/hoooks/apiHooks";
 
 export default function History() {
@@ -24,6 +25,13 @@ export default function History() {
     daysExpensesError,
     fetchDaysExpenses,
   } = useGetOneDaysExpenses();
+
+  const {
+    monthsExpenses,
+    monthsExpensesIsLoading,
+    monthsExpenseError,
+    fetchMonthsExpenses,
+  } = useGetOneMonthsExpenses();
 
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
@@ -56,6 +64,13 @@ export default function History() {
       fetchDaysExpenses(selectedDay);
     }
   }, [selectedDay]);
+
+  // Fetch one months expenses whenever that one month is selected
+  useEffect(() => {
+    if (selectedMonth) {
+      fetchMonthsExpenses(selectedMonth);
+    }
+  }, [selectedMonth]);
 
   if (yearsIsLoading) {
     return <p>Years loading...</p>;

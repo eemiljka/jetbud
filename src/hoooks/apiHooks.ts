@@ -19,6 +19,8 @@ import axios from 'axios';
 
   interface ExpenseData {
     expense: number
+    description: string
+    expense_sum: number
   }
 
 
@@ -329,6 +331,29 @@ const useGetExpenseYears = () => {
     return {daysExpenses, daysExpensesIsLoading, daysExpensesError, fetchDaysExpenses}
   }
 
+  const useGetOneMonthsExpenses = () => {
+    const [monthsExpenses, setMonthsExpenses] = useState<ExpenseData[]>([]);
+    const [monthsExpensesIsLoading, setMonthsExpensesIsLoading] = useState(false);
+    const [monthsExpenseError, setMonthsExpenseError] = useState<string | null>(null);
+
+    const fetchMonthsExpenses = async (month: any) => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.get("http://localhost:8080/months-expenses", {
+                params: { month },
+                headers: {Authorization: `Bearer ${token}`}
+            })
+            console.log(response.data);
+            setMonthsExpenses(response.data);
+        } catch {
+            setMonthsExpenseError("Failed to fetch month's expenses")
+        } finally {
+            setMonthsExpensesIsLoading(false);
+        }
+    }
+    return {monthsExpenses, monthsExpensesIsLoading, monthsExpenseError, fetchMonthsExpenses}
+  }
+
 // login
 const useLogin = () => {
     const [loginIsLoading, setLoginIsLoading] = React.useState(false);
@@ -385,5 +410,5 @@ const useRegister = () => {
     return {register, registerIsLoading, registerError};
 }
 
-export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useLogin, useAddExpense, useUpdateExpense, useRegister, useGetUserInfo, useGetExpenseYears, useGetExpenseMonths, useGetExpenseDays, useGetOneDaysExpenses };
+export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useLogin, useAddExpense, useUpdateExpense, useRegister, useGetUserInfo, useGetExpenseYears, useGetExpenseMonths, useGetExpenseDays, useGetOneDaysExpenses, useGetOneMonthsExpenses };
 
