@@ -9,6 +9,7 @@ import {
   useGetOneDaysExpenses,
   useGetOneMonthsExpenses,
 } from "@/hoooks/apiHooks";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 export default function History() {
   const { years, yearsIsLoading, yearsError, fetchYears } =
@@ -102,68 +103,66 @@ export default function History() {
                 setSelectedYear(item.year);
               }}
             >
-              <div className="flex-1 bg-white rounded-lg shadow-md p-5 cursor-pointer hover:underline">
-                <h3 className="hover:underline">{item.year}</h3>
+              <div className="flex-1 bg-white rounded-lg shadow-md p-5 cursor-pointer">
+                <h3 className="hover:underline">
+                  {item.year}
+                  <ChevronDownIcon className="w-5 h-5 inline-block ml-2" />
+                </h3>
+                {selectedYear && (
+                  <>
+                    {monthsIsLoading ? (
+                      <p>Loading months...</p>
+                    ) : monthsError ? (
+                      <p>Error: {monthsError}</p>
+                    ) : (
+                      months.map((item, index) => (
+                        <div
+                          className="mb-4"
+                          onClick={() => setSelectedMonth(item.month)}
+                          key={index}
+                        >
+                          <h3 className="hover:underline mt-4">
+                            {getMonthName(item.month)}
+                            <ChevronDownIcon className="w-5 h-5 inline-block ml-2" />
+                          </h3>
+                        </div>
+                      ))
+                    )}
+                  </>
+                )}
+                {selectedMonth && (
+                  <>
+                    {daysIsLoading ? (
+                      <p>Loading days...</p>
+                    ) : daysError ? (
+                      <p>Error: {daysError}</p>
+                    ) : (
+                      days.map((item, index) => (
+                        <div
+                          onClick={() => setSelectedDay(item.day)}
+                          key={index}
+                          className="mb-4"
+                        >
+                          <button className="bg-zinc-500 text-white w-20 rounded-lg hover:bg-zinc-600">
+                            <h3 className="hover:underline mt-2 mb-2">
+                              {item.day}.
+                            </h3>
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </>
+                )}
               </div>
             </div>
           ))}
         </div>
 
-        {/* Display Months if a year is selected */}
-        {selectedYear && (
-          <div className="mt-10">
-            <h3 className="text-xl font-semibold mb-4">
-              Months for {selectedYear}
-            </h3>
-            {monthsIsLoading ? (
-              <p>Loading months...</p>
-            ) : monthsError ? (
-              <p>Error: {monthsError}</p>
-            ) : (
-              months.map((item, index) => (
-                <div
-                  onClick={() => {
-                    setSelectedMonth(item.month);
-                  }}
-                  key={index}
-                  className="bg-white rounded-lg shadow-md p-5 mb-2 hover:underline cursor-pointer"
-                >
-                  <h3>{getMonthName(item.month)}</h3>
-                </div>
-              ))
-            )}
-          </div>
-        )}
-
-        {/* Display days if month is selected */}
-        {selectedMonth && (
-          <div className="mt-10">
-            <h3 className="text-xl font-semibold mb-4">
-              Days for {getMonthName(selectedMonth)}
-            </h3>
-            {daysIsLoading ? (
-              <p>Loading days...</p>
-            ) : daysError ? (
-              <p>Error: {daysError}</p>
-            ) : (
-              days.map((item, index) => (
-                <div
-                  onClick={() => setSelectedDay(item.day)}
-                  key={index}
-                  className="bg-white rounded-lg shadow-md p-5 mb-2 hover:underline cursor-pointer"
-                >
-                  <h3>{item.day}.</h3>
-                </div>
-              ))
-            )}
-          </div>
-        )}
-
         {/* Display one day's expenses when one day is selected */}
         {selectedDay && (
           <div className="mt-10">
             <h3 className="text-xl font-semibold mb-4">
-              Expenses for {selectedDay}
+              Expense logs made on {selectedDay}.
             </h3>
             {daysExpensesIsLoading ? (
               <p>Loading expenses...</p>
