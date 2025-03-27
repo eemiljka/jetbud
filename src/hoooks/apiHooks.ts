@@ -1,8 +1,25 @@
-import { Asset, Expense, User, Year } from '../types/DBTypes';
+import { Asset, Expense, User } from '../types/DBTypes';
 // TODO: Generate apiHooks 
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+
+  // Types
+  interface YearData {
+    year: number;
+  }
+
+  interface MonthData {
+    month: number
+  }
+
+  interface DayData {
+    day: number
+  }
+
+  interface ExpenseData {
+    expense: number
+  }
 
 
 /******** EXPENSES ********/ 
@@ -209,8 +226,8 @@ const useGetUserInfo = () => {
 }
 
 
-const useGetYears = () => {
-    const [years, setYears] = useState([]);
+const useGetExpenseYears = () => {
+    const [years, setYears] = useState<YearData[]>([]);
     const [yearsIsLoading, setYearsIsLoading] = useState(true);
     const [yearsError, setYearsError] = useState<string | null>(null);
   
@@ -234,8 +251,8 @@ const useGetYears = () => {
     return { years, yearsIsLoading, yearsError, fetchYears };
   };
 
-  const useGetMonths = () => {
-    const [months, setMonths] = useState([]);
+  const useGetExpenseMonths = () => {
+    const [months, setMonths] = useState<MonthData[]>([]);
     const [monthsIsLoading, setMonthsIsLoading] = useState(false);
     const [monthsError, setMonthsError] = useState<string | null>(null);
   
@@ -259,6 +276,58 @@ const useGetYears = () => {
   
     return { months, monthsIsLoading, monthsError, fetchMonths };
   };
+
+  const useGetExpenseDays = () => {
+    const [days, setDays] = useState<DayData[]>([]);
+    const [daysIsLoading, setDaysIsLoading] = useState(false);
+    const [daysError, setDaysError] = useState<string | null>(null);
+
+    const fetchDays = async (month: any) => {
+        setDaysIsLoading(true);
+        setDaysError(null);
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.get("http://localhost:8080/expense-days", {
+                params: { month },
+                headers: {Authorization: `Bearer ${token}`},
+            });
+            console.log('Fetched days: ', response.data);
+            setDays(response.data);
+        } catch {
+            setDaysError("Failed to fetch days");
+        } finally {
+            setDaysIsLoading(false);
+        }
+    }
+    return {days, daysIsLoading, daysError, fetchDays};
+  }
+
+  const useGetOneDaysExpenses = () => {
+    const [daysExpenses, setDaysExpenses] = useState<ExpenseData[]>([]);
+    const [daysExpensesIsLoading, setDaysExpensesIsLoading] = useState(false);
+    const [daysExpensesError, setDaysExpensesError] = useState<string | null>(null);
+
+    const fetchDaysExpenses = async (day: any) => {
+        setDaysExpensesIsLoading(true);
+        setDaysExpensesError(null);
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.get("http://localhost:8080/days-expenses", {
+                params: { day },
+                headers: {Authorization: `Bearer ${token}`}
+            })
+            console.log(response.data);
+            setDaysExpenses(response.data)
+        } catch {
+            setDaysExpensesError("Failed to fetch day's expenses")
+        } finally {
+            setDaysExpensesIsLoading(false)
+        }
+    }
+    return {daysExpenses, daysExpensesIsLoading, daysExpensesError, fetchDaysExpenses}
+  }
 
 // login
 const useLogin = () => {
@@ -316,5 +385,5 @@ const useRegister = () => {
     return {register, registerIsLoading, registerError};
 }
 
-export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useLogin, useAddExpense, useUpdateExpense, useRegister, useGetUserInfo, useGetYears, useGetMonths };
+export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useLogin, useAddExpense, useUpdateExpense, useRegister, useGetUserInfo, useGetExpenseYears, useGetExpenseMonths, useGetExpenseDays, useGetOneDaysExpenses };
 
