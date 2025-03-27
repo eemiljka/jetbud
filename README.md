@@ -1,9 +1,10 @@
 # JetBud - a Budget Buddy
 
-## This is a budget tracking app that lets the user log their asset and expenses to a system that calculates their monthly balance.
+## This is a budget tracking app that lets the user log their assets and expenses to a system that calculates their monthly balance.
 
-### Below are pictures of the application interface.
+### After instructions there are pictures of the application.
 
+## Instructions
 ## How to run application
 
 1. Clone this repository
