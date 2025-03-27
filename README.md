@@ -1,9 +1,10 @@
 # JetBud - a Budget Buddy
 
-## This is a budget tracking app that lets the user log their asset and expenses to a system that calculates their monthly balance.
+## This is a budget tracking app that lets the user log their assets and expenses to a system that calculates their monthly balance.
 
-### Below are pictures of the application interface.
+### After instructions there are pictures of the application.
 
+## Instructions
 ## How to run application
 
 1. Clone this repository
@@ -29,7 +30,8 @@ CREATE TABLE expenses(
     expense_id INT AUTO_INCREMENT PRIMARY KEY,
     description VARCHAR(255) NOT NULL,
     expense_sum DECIMAL(10,2) NOT NULL,
-    user_id INT(11) NOT NULL,
+    user_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
@@ -37,7 +39,8 @@ CREATE TABLE assets(
     asset_id INT AUTO_INCREMENT PRIMARY KEY,
     description VARCHAR(255) NOT NULL,
     asset_sum VARCHAR(255) NOT NULL,
-    user_id VARCHAR(255) NOT NULL,
+    user_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
