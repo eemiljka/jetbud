@@ -3,6 +3,7 @@ import { Asset, Expense, User } from '../types/DBTypes';
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { headers } from 'next/headers';
 
   // Types
   interface YearData {
@@ -227,7 +228,40 @@ const useGetUserInfo = () => {
     return {profileInfo, profileError, profileIsLoading, fetchUserInfo}
 }
 
+// change username
+const useUpdateUsername = () => {
+    const [usernameIsLoading, setUsernameIsLoading] = useState(false);
+    const [usernameError, setUsernameError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState("");
 
+    const updateUsername = async (newUsername: string) => {
+        setUsernameIsLoading(true);
+        setUsernameError(null);
+        setSuccessMessage("");
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.put("http://localhost:8080/username",
+                {username: newUsername}, 
+                {
+                headers: {Authorization: `Bearer ${token}`}
+            })
+            setSuccessMessage(response.data.message);
+        } catch (err) {
+            if (axios.isAxiosError(err) && err.response) {
+                setUsernameError(err.response.data || "Failed to update username. Please try again.");
+            } else {
+                setUsernameError("Failed to update username. Please try again.");
+            }
+        } finally {
+            setUsernameIsLoading(false);
+        }
+    }
+    return {updateUsername, usernameIsLoading, usernameError, successMessage}
+}
+
+
+// History
 const useGetExpenseYears = () => {
     const [years, setYears] = useState<YearData[]>([]);
     const [yearsIsLoading, setYearsIsLoading] = useState(true);
@@ -410,5 +444,5 @@ const useRegister = () => {
     return {register, registerIsLoading, registerError};
 }
 
-export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useLogin, useAddExpense, useUpdateExpense, useRegister, useGetUserInfo, useGetExpenseYears, useGetExpenseMonths, useGetExpenseDays, useGetOneDaysExpenses, useGetOneMonthsExpenses };
+export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useLogin, useAddExpense, useUpdateExpense, useRegister, useGetUserInfo, useGetExpenseYears, useGetExpenseMonths, useGetExpenseDays, useGetOneDaysExpenses, useGetOneMonthsExpenses, useUpdateUsername };
 
