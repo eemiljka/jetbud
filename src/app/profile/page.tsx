@@ -6,6 +6,7 @@ import React, { useEffect } from "react";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { useGetUserInfo } from "@/hoooks/apiHooks";
 import { User } from "@/types/DBTypes";
+import Link from "next/link";
 
 const Profile: React.FC = () => {
   const { profileInfo, profileIsLoading, profileError, fetchUserInfo } =
@@ -44,9 +45,11 @@ const Profile: React.FC = () => {
                     <div key={user.user_id}>{user.username}</div>
                   ))}
               </h3>
-              <button className="hover:bg-zinc-100 rounded-md p-1">
-                <PencilIcon className="w-5 h-5 text-zinc-600" />
-              </button>
+              <Link href="/username" legacyBehavior>
+                <a className="hover:bg-zinc-100 rounded-md p-1">
+                  <PencilIcon className="w-5 h-5 text-zinc-600" />
+                </a>
+              </Link>
             </div>
             <Divider />
             <p className="mt-10">Email</p>
