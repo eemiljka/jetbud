@@ -225,7 +225,7 @@ const useGetUserInfo = () => {
             setProfileIsLoading(false);
         }
     }
-    return {profileInfo, profileError, profileIsLoading, fetchUserInfo}
+    return {profileInfo, profileError, profileIsLoading, refetchUserInfo: fetchUserInfo}
 }
 
 // change username

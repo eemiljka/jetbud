@@ -2,18 +2,31 @@
 
 import Sidebar from "@/components/Sidebar";
 import Divider from "@/components/Divider";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import Modal from "react-modal";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { useGetUserInfo } from "@/hoooks/apiHooks";
 import { User } from "@/types/DBTypes";
 import Link from "next/link";
+import UpdateUsernameForm from "../username/page";
 
 const Profile: React.FC = () => {
-  const { profileInfo, profileIsLoading, profileError, fetchUserInfo } =
+  const { profileInfo, profileIsLoading, profileError, refetchUserInfo } =
     useGetUserInfo();
 
+  const [changeUsernameModalIsOpen, setChancgeUsernameModalIsOpen] =
+    useState(false);
+
+  function openChangeUsernameModal() {
+    setChancgeUsernameModalIsOpen(true);
+  }
+
+  function closeChangeUsernameModal() {
+    setChancgeUsernameModalIsOpen(false);
+  }
+
   useEffect(() => {
-    fetchUserInfo();
+    refetchUserInfo();
   }, []);
 
   return (
@@ -45,11 +58,31 @@ const Profile: React.FC = () => {
                     <div key={user.user_id}>{user.username}</div>
                   ))}
               </h3>
-              <Link href="/username" legacyBehavior>
-                <a className="hover:bg-zinc-100 rounded-md p-1">
-                  <PencilIcon className="w-5 h-5 text-zinc-600" />
-                </a>
-              </Link>
+              <button
+                onClick={openChangeUsernameModal}
+                className="hover:bg-zinc-100 rounded-md p-1"
+              >
+                <PencilIcon className="w-5 h-5 text-zinc-600" />
+              </button>
+              <Modal
+                className={"bg-white rounded-lg shadow-md p-8"}
+                style={{
+                  overlay: { backgroundColor: "rgba(0, 0, 0, 0.75" },
+                  content: {
+                    color: "black",
+                    width: "500px",
+                    height: "250px",
+                    margin: "auto",
+                    padding: "20px",
+                    borderRadius: "8px",
+                  },
+                }}
+                isOpen={changeUsernameModalIsOpen}
+                onRequestClose={closeChangeUsernameModal}
+                contentLabel="Change Username"
+              >
+                <UpdateUsernameForm />
+              </Modal>
             </div>
             <Divider />
             <p className="mt-10">Email</p>
