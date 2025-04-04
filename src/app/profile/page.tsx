@@ -7,22 +7,21 @@ import Modal from "react-modal";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { useGetUserInfo } from "@/hoooks/apiHooks";
 import { User } from "@/types/DBTypes";
-import Link from "next/link";
 import UpdateUsernameForm from "../username/page";
 
 const Profile: React.FC = () => {
   const { profileInfo, profileIsLoading, profileError, refetchUserInfo } =
     useGetUserInfo();
 
-  const [changeUsernameModalIsOpen, setChancgeUsernameModalIsOpen] =
-    useState(false);
+  const [changeUsernameModalIsOpen, setChangeUsernameModalIsOpen] =
+    React.useState(false);
 
   function openChangeUsernameModal() {
-    setChancgeUsernameModalIsOpen(true);
+    setChangeUsernameModalIsOpen(true);
   }
 
   function closeChangeUsernameModal() {
-    setChancgeUsernameModalIsOpen(false);
+    setChangeUsernameModalIsOpen(false);
   }
 
   useEffect(() => {
@@ -81,7 +80,9 @@ const Profile: React.FC = () => {
                 onRequestClose={closeChangeUsernameModal}
                 contentLabel="Change Username"
               >
-                <UpdateUsernameForm />
+                <UpdateUsernameForm
+                  closeChangeUsernameModal={closeChangeUsernameModal}
+                />
               </Modal>
             </div>
             <Divider />
