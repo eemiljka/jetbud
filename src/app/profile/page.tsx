@@ -28,6 +28,23 @@ const Profile: React.FC = () => {
     refetchUserInfo();
   }, []);
 
+  const customStyles = {
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.75)",
+    },
+    content: {
+      position: "absolute",
+      top: "20%",
+      left: "50%",
+      transform: "translate(-50%, 0)",
+      width: "500px",
+      maxHeight: "90vh",
+      overflowY: "auto",
+      padding: "20px",
+      borderRadius: "8px",
+    },
+  };
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />
@@ -65,17 +82,7 @@ const Profile: React.FC = () => {
               </button>
               <Modal
                 className={"bg-white rounded-lg shadow-md p-8"}
-                style={{
-                  overlay: { backgroundColor: "rgba(0, 0, 0, 0.75" },
-                  content: {
-                    color: "black",
-                    width: "500px",
-                    height: "250px",
-                    margin: "auto",
-                    padding: "20px",
-                    borderRadius: "8px",
-                  },
-                }}
+                style={customStyles}
                 isOpen={changeUsernameModalIsOpen}
                 onRequestClose={closeChangeUsernameModal}
                 contentLabel="Change Username"
