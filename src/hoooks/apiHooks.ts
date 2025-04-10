@@ -260,6 +260,38 @@ const useUpdateUsername = () => {
     return {updateUsername, usernameIsLoading, usernameError, successMessage}
 }
 
+// change password
+const useUpdatePassword = () => {
+    const [passwordIsLoading, setPasswordIsLoading] = useState(false);
+    const [passwordError, setPasswordError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState("");
+
+    const updatePassword = async (newPassword: string) => {
+        setPasswordError(null);
+        setPasswordIsLoading(true);
+        setSuccessMessage("");
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.put("http://localhost:8080/password", {
+                password: newPassword
+            }, 
+        {headers: {Authorization: `Bearer ${token}`}
+    });
+    setSuccessMessage(response.data.message);
+        } catch (err) {
+            if (axios.isAxiosError(err) && err.response) {
+                setPasswordError(err.response.data || "Failed to update password. Please try again.");
+            } else {
+                setPasswordError("Failed to update password. Please Try again.");
+            }
+        } finally {
+            setPasswordIsLoading(false);
+        }
+    }
+    return {updatePassword, passwordIsLoading, passwordError, successMessage}
+}
+
 
 // History
 const useGetExpenseYears = () => {
@@ -444,5 +476,24 @@ const useRegister = () => {
     return {register, registerIsLoading, registerError};
 }
 
-export { useFetchExpenses, useDeleteExpense, useFetchAssets, useDeleteAsset, useAddAsset, useUpdateAsset, useLogin, useAddExpense, useUpdateExpense, useRegister, useGetUserInfo, useGetExpenseYears, useGetExpenseMonths, useGetExpenseDays, useGetOneDaysExpenses, useGetOneMonthsExpenses, useUpdateUsername };
+export { 
+    useFetchExpenses, 
+    useDeleteExpense, 
+    useFetchAssets, 
+    useDeleteAsset, 
+    useAddAsset, 
+    useUpdateAsset, 
+    useLogin, 
+    useAddExpense, 
+    useUpdateExpense, 
+    useRegister, 
+    useGetUserInfo, 
+    useGetExpenseYears, 
+    useGetExpenseMonths, 
+    useGetExpenseDays, 
+    useGetOneDaysExpenses, 
+    useGetOneMonthsExpenses, 
+    useUpdateUsername,
+    useUpdatePassword
+};
 
