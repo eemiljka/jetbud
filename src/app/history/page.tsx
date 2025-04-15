@@ -98,17 +98,23 @@ export default function History() {
           {years.map((item) => (
             <div
               key={item.year}
-              className="flex items-center mb-4"
+              className="flex items-center mb-4 cursor-pointer"
               onClick={() => {
                 setSelectedYear(item.year);
               }}
             >
               <div className="flex-1 bg-white rounded-lg shadow-md p-5 cursor-pointer">
-                <h3 className="hover:underline">
+                <h3
+                  className={
+                    selectedYear === item.year
+                      ? "underline font-bold"
+                      : "font-normal no-underline"
+                  }
+                >
                   {item.year}
                   <ChevronDownIcon className="w-5 h-5 inline-block ml-2" />
                 </h3>
-                {selectedYear && (
+                {selectedYear === item.year && (
                   <>
                     {monthsIsLoading ? (
                       <p>Loading months...</p>
@@ -117,11 +123,15 @@ export default function History() {
                     ) : (
                       months.map((item, index) => (
                         <div
-                          className="mb-4"
+                          className={`mb-4 hover:underline ${
+                            selectedMonth === item.month
+                              ? "underline text-blue-500"
+                              : ""
+                          }`}
                           onClick={() => setSelectedMonth(item.month)}
                           key={index}
                         >
-                          <h3 className="hover:underline mt-4">
+                          <h3 className="mt-4">
                             {getMonthName(item.month)}
                             <ChevronDownIcon className="w-5 h-5 inline-block ml-2" />
                           </h3>
@@ -143,10 +153,14 @@ export default function History() {
                           key={index}
                           className="mb-4"
                         >
-                          <button className="bg-zinc-500 text-white w-20 rounded-lg hover:bg-zinc-600">
-                            <h3 className="hover:underline mt-2 mb-2">
-                              {item.day}.
-                            </h3>
+                          <button
+                            className={`bg-zinc-500 text-white w-20 rounded-lg hover:bg-zinc-600 ${
+                              selectedDay === item.day
+                                ? "underline bg-zinc-800"
+                                : ""
+                            }`}
+                          >
+                            <h3 className="mt-2 mb-2">{item.day}.</h3>
                           </button>
                         </div>
                       ))
