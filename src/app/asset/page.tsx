@@ -4,6 +4,7 @@ import Sidebar from "@/components/Sidebar";
 import {
   useDeleteAsset,
   useFetchAssets,
+  useGetOneMonthsAssets,
   useUpdateAsset,
 } from "@/hoooks/apiHooks";
 import { Asset } from "@/types/DBTypes";
@@ -11,19 +12,29 @@ import { PlusCircleIcon, XCircleIcon } from "@heroicons/react/20/solid";
 import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
 
+interface AssetData {
+  asset_id: number;
+  asset: number;
+  description: string;
+  asset_sum: number;
+}
+
 export default function Assets() {
   const month = new Date().toLocaleString("default", { month: "long" });
+  const numericMonth = new Date().getMonth() + 1;
+
   const {
-    assets: initialAssets,
-    assetsIsLoading,
-    assetsError,
-    refetchAssets,
-  } = useFetchAssets();
-  const [assets, setAssets] = useState<Asset[]>(initialAssets);
+    monthsAssets,
+    monthsAssetsIsLoading,
+    monthsAssetError,
+    refetchMonthsAssets,
+  } = useGetOneMonthsAssets();
+
+  const [assets, setAssets] = useState<Asset[]>(monthsAssets);
 
   useEffect(() => {
-    setAssets(initialAssets);
-  }, [initialAssets]);
+    refetchMonthsAssets(numericMonth);
+  }, [numericMonth, refetchMonthsAssets]);
 
   const [assetToDelete, setAssetToDelete] = useState<number | null>(null);
   const { deleteAsset } = useDeleteAsset();
@@ -86,14 +97,14 @@ export default function Assets() {
         description: assetName,
         asset_sum: Number(assetAmount),
       });
-      refetchAssets();
+      refetchMonthsAssets(numericMonth);
 
       resetForm();
       closeModal();
       alert("Asset updated successfully!");
     } catch (err) {
-      console.error("Error updating expense", assetsError);
-      alert(assetsError || "Failed to update assets");
+      console.error("Error updating expense", monthsAssetError);
+      alert(monthsAssetError || "Failed to update assets");
     }
   };
 
@@ -105,15 +116,17 @@ export default function Assets() {
           <h2 className="text-2xl font-semibold mb-4">{month} Assets</h2>
 
           {/* Loading State */}
-          {assetsIsLoading && <p>Loading assets...</p>}
+          {monthsAssetsIsLoading && <p>Loading assets...</p>}
 
           {/* Error State */}
-          {assetsError && <p className="text-red-500">Error: {assetsError}</p>}
+          {monthsAssetError && (
+            <p className="text-red-500">Error: {monthsAssetError}</p>
+          )}
 
           {/* Assets List with a delete button */}
-          {!assetsIsLoading &&
-            !assetsError &&
-            assets.map((asset: Asset) => (
+          {!monthsAssetsIsLoading &&
+            !monthsAssetError &&
+            monthsAssets.map((asset: Asset) => (
               <div key={asset.asset_id} className="flex items-center mb-4">
                 {/* Asset Details */}
                 <div className="flex-1 bg-white rounded-lg shadow-md p-5">

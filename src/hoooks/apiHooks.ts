@@ -19,10 +19,17 @@ import { headers } from 'next/headers';
   }
 
   interface ExpenseData {
-    expense_id: number;
+    expense_id: number
     expense: number
     description: string
     expense_sum: number
+  }
+
+  interface AssetData {
+    asset_id: number
+    asset: number
+    description: string
+    asset_sum: number
   }
 
 
@@ -421,6 +428,28 @@ const useGetExpenseYears = () => {
     return {monthsExpenses, monthsExpensesIsLoading, monthsExpenseError, refetchMonthsExpenses: fetchMonthsExpenses}
   }
 
+  const useGetOneMonthsAssets = () => {
+    const [monthsAssets, setMonthsAssets] = useState<AssetData[]>([]);
+    const [monthsAssetsIsLoading, setMonthsAssetsIsLoading] = useState(false);
+    const [monthsAssetError, setMonthsAssetError] = useState<string | null>(null);
+
+    const fetchMonthsAssets = async (month: any) => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.get("http://localhost:8080/months-assets", {
+                params: {month},
+                headers: {Authorization: `Bearer ${token}`}
+            })
+            setMonthsAssets(response.data);
+        } catch {
+            setMonthsAssetError("Failed to fetch month's assets")
+        } finally {
+            setMonthsAssetsIsLoading(false);
+        }
+    }
+    return {monthsAssets, monthsAssetsIsLoading, monthsAssetError, refetchMonthsAssets: fetchMonthsAssets}
+  }
+
 // login
 const useLogin = () => {
     const [loginIsLoading, setLoginIsLoading] = React.useState(false);
@@ -495,6 +524,7 @@ export {
     useGetOneDaysExpenses, 
     useGetOneMonthsExpenses, 
     useUpdateUsername,
-    useUpdatePassword
+    useUpdatePassword,
+    useGetOneMonthsAssets
 };
 

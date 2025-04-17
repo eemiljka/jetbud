@@ -5,7 +5,6 @@ import Modal from "react-modal";
 import Sidebar from "@/components/Sidebar";
 import {
   useDeleteExpense,
-  useFetchExpenses,
   useUpdateExpense,
   useGetOneMonthsExpenses,
 } from "@/hoooks/apiHooks";
