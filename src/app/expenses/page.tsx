@@ -7,24 +7,35 @@ import {
   useDeleteExpense,
   useFetchExpenses,
   useUpdateExpense,
+  useGetOneMonthsExpenses,
 } from "@/hoooks/apiHooks";
 import { Expense } from "@/types/DBTypes";
 import { useEffect, useState } from "react";
 import { PlusCircleIcon, XCircleIcon } from "@heroicons/react/20/solid";
 
+interface ExpenseData {
+  expense_id: number;
+  expense: number;
+  description: string;
+  expense_sum: number;
+}
+
 export default function Expenses() {
   const month = new Date().toLocaleString("default", { month: "long" });
+  const numericMonth = new Date().getMonth() + 1;
+
   const {
-    expenses: initialExpenses,
-    expensesIsLoading,
-    expensesError,
-    refetchExpenses,
-  } = useFetchExpenses();
-  const [expenses, setExpenses] = useState<Expense[]>(initialExpenses);
+    monthsExpenses,
+    monthsExpensesIsLoading,
+    monthsExpenseError,
+    refetchMonthsExpenses,
+  } = useGetOneMonthsExpenses();
+
+  const [expenses, setExpenses] = useState<Expense[]>(monthsExpenses);
 
   useEffect(() => {
-    setExpenses(initialExpenses);
-  }, [initialExpenses]);
+    refetchMonthsExpenses(numericMonth);
+  }, [numericMonth, refetchMonthsExpenses]);
 
   const [expenseToDelete, setExpenseToDelete] = useState<number | null>(null);
   const { deleteExpense } = useDeleteExpense();
@@ -87,14 +98,14 @@ export default function Expenses() {
         description: expenseName,
         expense_sum: Number(expenseAmount),
       });
-      refetchExpenses();
+      refetchMonthsExpenses(numericMonth);
 
       resetForm();
       closeModal();
       alert("Expense updated successfully!");
     } catch (err) {
-      console.error("Error updating expense", expensesError);
-      alert(expensesError || "Failed to update expense");
+      console.error("Error updating expense", monthsExpenseError);
+      alert(monthsExpenseError || "Failed to update expense");
     }
   };
 
@@ -106,17 +117,17 @@ export default function Expenses() {
           <h2 className="text-2xl font-semibold mb-4">{month} Expenses</h2>
 
           {/* Loading State */}
-          {expensesIsLoading && <p>Loading expenses...</p>}
+          {monthsExpensesIsLoading && <p>Loading expenses...</p>}
 
           {/* Error State */}
-          {expensesError && (
-            <p className="text-red-500">Error: {expensesError}</p>
+          {monthsExpenseError && (
+            <p className="text-red-500">Error: {monthsExpenseError}</p>
           )}
 
           {/* Expenses List with a delete and modify button */}
-          {!expensesIsLoading &&
-            !expensesError &&
-            expenses.map((expense: Expense) => (
+          {!monthsExpensesIsLoading &&
+            !monthsExpenseError &&
+            monthsExpenses.map((expense: ExpenseData) => (
               <div key={expense.expense_id} className="flex items-center mb-4">
                 {/* Expense Details */}
                 <div className="flex-1 bg-white rounded-lg shadow-md p-5">

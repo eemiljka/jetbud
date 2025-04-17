@@ -19,6 +19,7 @@ import { headers } from 'next/headers';
   }
 
   interface ExpenseData {
+    expense_id: number;
     expense: number
     description: string
     expense_sum: number
@@ -417,7 +418,7 @@ const useGetExpenseYears = () => {
             setMonthsExpensesIsLoading(false);
         }
     }
-    return {monthsExpenses, monthsExpensesIsLoading, monthsExpenseError, fetchMonthsExpenses}
+    return {monthsExpenses, monthsExpensesIsLoading, monthsExpenseError, refetchMonthsExpenses: fetchMonthsExpenses}
   }
 
 // login

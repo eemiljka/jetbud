@@ -31,7 +31,7 @@ export default function History() {
     monthsExpenses,
     monthsExpensesIsLoading,
     monthsExpenseError,
-    fetchMonthsExpenses,
+    refetchMonthsExpenses,
   } = useGetOneMonthsExpenses();
 
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
@@ -69,7 +69,7 @@ export default function History() {
   // Fetch one months expenses whenever that one month is selected
   useEffect(() => {
     if (selectedMonth) {
-      fetchMonthsExpenses(selectedMonth);
+      refetchMonthsExpenses(selectedMonth);
     }
   }, [selectedMonth]);
 
