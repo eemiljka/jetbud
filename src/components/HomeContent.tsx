@@ -9,6 +9,8 @@ import {
   useFetchExpenses,
   useAddExpense,
   useAddAsset,
+  useGetOneMonthsExpenses,
+  useGetOneMonthsAssets,
 } from "@/hoooks/apiHooks";
 import XCircleIcon from "@heroicons/react/20/solid/XCircleIcon";
 
@@ -17,31 +19,48 @@ const HomeContent: React.FC = () => {
   // Get the current month
   const date = new Date();
   const month = date.toLocaleString("default", { month: "long" });
+  const numericMonth = date.getMonth() + 1;
 
-  // Fetch expenses and assets
-  const { expenses, expensesIsLoading, expensesError, refetchExpenses } =
-    useFetchExpenses();
+  // Fetch this months expenses and assets
+  const {
+    monthsExpenses,
+    monthsExpensesIsLoading,
+    monthsExpenseError,
+    refetchMonthsExpenses,
+  } = useGetOneMonthsExpenses();
+
+  const {
+    monthsAssets,
+    monthsAssetsIsLoading,
+    monthsAssetError,
+    refetchMonthsAssets,
+  } = useGetOneMonthsAssets();
+
+  useEffect(() => {
+    refetchMonthsExpenses(numericMonth);
+    refetchMonthsAssets(numericMonth);
+  }, [numericMonth, refetchMonthsExpenses, refetchMonthsAssets]);
 
   const { addExpense, expenseIsLoading, expenseError } = useAddExpense();
 
-  const { assets, assetsIsLoading, assetsError, refetchAssets } =
-    useFetchAssets();
-
   const { addAsset, assetIsLoading, assetError } = useAddAsset();
 
-  // Calculate total expenses
-  const totalExpenses =
-    expenses.reduce(
-      (total, expense) => total + Number(expense.expense_sum),
+  // calculate THIS MONTHS total expenses
+  const monthsTotalExpenses =
+    monthsExpenses.reduce(
+      (total, monthsExpense) => total + Number(monthsExpense.expense_sum),
       0
     ) || 0;
 
-  // Calculate total assets
-  const totalAssets =
-    assets.reduce((total, asset) => total + Number(asset.asset_sum), 0) || 0;
+  // calculate THIS MONTHS total assets
+  const monthsTotalAssets =
+    monthsAssets.reduce(
+      (total, monthsAsset) => total + Number(monthsAsset.asset_sum),
+      0
+    ) || 0;
 
-  // Calculate total balance
-  const totalBalance = totalAssets - totalExpenses;
+  // Calculate THIS MONTHS total balance
+  const monthsTotalBalance = monthsTotalAssets - monthsTotalExpenses;
 
   // Add expense modal state
   const [addExpenseModalIsOpen, setAddExpenseModalIsOpen] =
@@ -100,7 +119,7 @@ const HomeContent: React.FC = () => {
         expense_sum: Number(expenseAmount),
       });
 
-      refetchExpenses();
+      refetchMonthsExpenses(numericMonth);
 
       resetForm();
       closeAddExpenseModal();
@@ -123,7 +142,7 @@ const HomeContent: React.FC = () => {
         asset_sum: Number(assetAmount),
       });
 
-      refetchAssets();
+      refetchMonthsAssets(numericMonth);
 
       resetAssetForm();
       closeAddAssetModal();
@@ -145,16 +164,18 @@ const HomeContent: React.FC = () => {
           <h2 className="text-2xl font-semibold mb-4">{month} Expenses</h2>
 
           {/* Loading State */}
-          {expensesIsLoading && <p>Loading expenses...</p>}
+          {monthsExpensesIsLoading && <p>Loading expenses...</p>}
 
           {/* Error State */}
-          {expensesError && (
-            <p className="text-red-500">Error: {expensesError}</p>
+          {monthsExpenseError && (
+            <p className="text-red-500">Error: {monthsExpenseError}</p>
           )}
 
           {/* Total Expenses */}
-          {!expensesIsLoading && !expensesError && (
-            <h3 className="text-xl mb-4">Total: ${totalExpenses.toFixed(2)}</h3>
+          {!monthsExpensesIsLoading && !monthsExpenseError && (
+            <h3 className="text-xl mb-4">
+              Total: ${monthsTotalExpenses.toFixed(2)}
+            </h3>
           )}
           {/* Link to expenses page */}
           <Link href="/expenses" legacyBehavior>
@@ -236,14 +257,18 @@ const HomeContent: React.FC = () => {
           <h2 className="text-2xl font-semibold mb-4">{month} Assets</h2>
 
           {/* Loading State */}
-          {assetsIsLoading && <p>Loading assets...</p>}
+          {monthsAssetsIsLoading && <p>Loading assets...</p>}
 
           {/* Error State */}
-          {assetsError && <p className="text-red-500">Error: {assetsError}</p>}
+          {monthsAssetError && (
+            <p className="text-red-500">Error: {monthsAssetError}</p>
+          )}
 
           {/* Total Assets */}
-          {!assetsIsLoading && !assetsError && (
-            <h3 className="text-xl mb-4">Total: ${totalAssets.toFixed(2)}</h3>
+          {!monthsAssetsIsLoading && !monthsAssetError && (
+            <h3 className="text-xl mb-4">
+              Total: ${monthsTotalAssets.toFixed(2)}
+            </h3>
           )}
           <Link href="/asset" legacyBehavior>
             <a className="text-zinc-600 mb-10 block hover:underline">
@@ -324,9 +349,11 @@ const HomeContent: React.FC = () => {
         <h2 className="text-2xl font-semibold mb-4">Balance Overview</h2>
 
         {/* Show Loading/Error State */}
-        {(expensesIsLoading || assetsIsLoading) && <p>Loading balance...</p>}
+        {(monthsExpensesIsLoading || assetsIsLoading) && (
+          <p>Loading balance...</p>
+        )}
         <h3 className="text-xl mb-4">
-          Total balance: ${totalBalance.toFixed(2)}
+          Total balance: ${monthsTotalBalance.toFixed(2)}
         </h3>
 
         <Link href="/overview" legacyBehavior>
