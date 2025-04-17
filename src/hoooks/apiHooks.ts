@@ -302,6 +302,8 @@ const useUpdatePassword = () => {
 
 
 // History
+
+// expenses
 const useGetExpenseYears = () => {
     const [years, setYears] = useState<YearData[]>([]);
     const [yearsIsLoading, setYearsIsLoading] = useState(true);
@@ -428,6 +430,8 @@ const useGetExpenseYears = () => {
     return {monthsExpenses, monthsExpensesIsLoading, monthsExpenseError, refetchMonthsExpenses: fetchMonthsExpenses}
   }
 
+  // assets
+
   const useGetOneMonthsAssets = () => {
     const [monthsAssets, setMonthsAssets] = useState<AssetData[]>([]);
     const [monthsAssetsIsLoading, setMonthsAssetsIsLoading] = useState(false);
@@ -448,6 +452,108 @@ const useGetExpenseYears = () => {
         }
     }
     return {monthsAssets, monthsAssetsIsLoading, monthsAssetError, refetchMonthsAssets: fetchMonthsAssets}
+  }
+
+  const useGetAssetYears = () => {
+    const [assetYears, setAssetYears] = useState<YearData[]>([]);
+    const [assetYearsError, setAssetYearsError] = useState<string | null>(null);
+    const [assetYearsIsLoading, setAssetYearsIsLoading] = useState(false);
+
+    const fetchAssetYears = async () => {
+        setAssetYearsIsLoading(true);
+        setAssetYearsError(null);
+
+        try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:8080/asset-years", {
+            headers: {Authorization: `Bearer ${token}`}
+        })
+        setAssetYears(response.data)
+    } catch {
+        setAssetYearsError("Failed to fetch years")
+    } finally {
+        setAssetYearsIsLoading(false);
+    }
+}
+return {assetYears, assetYearsError, assetYearsIsLoading, fetchAssetYears}
+  }
+
+  const useGetAssetMonths = () => {
+    const [assetMonths, setAssetMonths] = useState<MonthData[]>([]);
+    const [assetMonthsIsLoading, setAssetMonthsIsLoading] = useState(false);
+    const [assetMonthsError, setAssetMonthsError] = useState<string | null>(null);
+  
+    const fetchAssetMonths = async (year: any) => {
+      setAssetMonthsIsLoading(true);
+      setAssetMonthsError(null);
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:8080/asset-months", {
+          params: { year },
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log("Fetched months: ", response.data);
+        setAssetMonths(response.data);
+      } catch {
+        setAssetMonthsError("Failed to fetch months");
+      } finally {
+        setAssetMonthsIsLoading(false);
+      }
+    };
+  
+    return { assetMonths, assetMonthsIsLoading, assetMonthsError, fetchAssetMonths };
+  };
+
+  const useGetAssetDays = () => {
+    const [assetDays, setAssetDays] = useState<DayData[]>([]);
+    const [assetDaysIsLoading, setAssetDaysIsLoading] = useState(false);
+    const [assetDaysError, setAssetDaysError] = useState<string | null>(null);
+
+    const fetchAssetDays = async (month: any) => {
+        setAssetDaysIsLoading(true);
+        setAssetDaysError(null);
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.get("http://localhost:8080/asset-days", {
+                params: { month },
+                headers: {Authorization: `Bearer ${token}`},
+            });
+            console.log('Fetched days: ', response.data);
+            setAssetDays(response.data);
+        } catch {
+            setAssetDaysError("Failed to fetch days");
+        } finally {
+            setAssetDaysIsLoading(false);
+        }
+    }
+    return {assetDays, assetDaysIsLoading, assetDaysError, fetchAssetDays};
+  }
+
+  const useGetOneDaysAssets = () => {
+    const [daysAssets, setDaysAssets] = useState<AssetData[]>([]);
+    const [daysAssetsIsLoading, setDaysAssetsIsLoading] = useState(false);
+    const [daysAssetsError, setDaysAssetsError] = useState<string | null>(null);
+
+    const fetchDaysAssets = async (day: any) => {
+        setDaysAssetsIsLoading(true);
+        setDaysAssetsError(null);
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.get("http://localhost:8080/days-assets", {
+                params: { day },
+                headers: {Authorization: `Bearer ${token}`}
+            })
+            console.log(response.data);
+            setDaysAssets(response.data)
+        } catch {
+            setDaysAssetsError("Failed to fetch day's assets")
+        } finally {
+            setDaysAssetsIsLoading(false)
+        }
+    }
+    return {daysAssets, daysAssetsIsLoading, daysAssetsError, fetchDaysAssets}
   }
 
 // login
@@ -525,6 +631,10 @@ export {
     useGetOneMonthsExpenses, 
     useUpdateUsername,
     useUpdatePassword,
-    useGetOneMonthsAssets
+    useGetOneMonthsAssets,
+    useGetAssetYears,
+    useGetAssetDays,
+    useGetAssetMonths,
+    useGetOneDaysAssets,
 };
 
