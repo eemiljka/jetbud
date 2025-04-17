@@ -349,7 +349,7 @@ const HomeContent: React.FC = () => {
         <h2 className="text-2xl font-semibold mb-4">Balance Overview</h2>
 
         {/* Show Loading/Error State */}
-        {(monthsExpensesIsLoading || assetsIsLoading) && (
+        {(monthsExpensesIsLoading || monthsAssetsIsLoading) && (
           <p>Loading balance...</p>
         )}
         <h3 className="text-xl mb-4">
