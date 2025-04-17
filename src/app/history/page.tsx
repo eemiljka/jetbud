@@ -352,7 +352,7 @@ export default function History() {
         {selectedAssetDay && (
           <div className="mt-10">
             <h3 className="text-xl font-semibold mb-4">
-              Expense logs made on {selectedAssetDay}.
+              Asset logs made on {selectedAssetDay}.
             </h3>
             {daysAssetsIsLoading ? (
               <p>Loading expenses...</p>
