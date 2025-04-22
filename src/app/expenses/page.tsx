@@ -27,14 +27,8 @@ export default function Expenses() {
     monthsExpenses,
     monthsExpensesIsLoading,
     monthsExpenseError,
-    refetchMonthsExpenses,
-  } = useGetOneMonthsExpenses();
-
-  const [expenses, setExpenses] = useState<Expense[]>(monthsExpenses);
-
-  useEffect(() => {
-    refetchMonthsExpenses(numericMonth);
-  }, [numericMonth, refetchMonthsExpenses]);
+    refetch,
+  } = useGetOneMonthsExpenses(numericMonth);
 
   const [expenseToDelete, setExpenseToDelete] = useState<number | null>(null);
   const { deleteExpense } = useDeleteExpense();
@@ -73,11 +67,8 @@ export default function Expenses() {
     try {
       setExpenseToDelete(id);
       await deleteExpense(id);
-
-      setExpenses((prevExpenses) =>
-        prevExpenses.filter((expense) => expense.expense_id !== id)
-      );
       alert("Expense deleted successfully!");
+      refetch();
     } catch (error) {
       console.error("Failed to delete expense:", error);
       alert("Failed to delete the expense. Please try again.");
@@ -97,11 +88,11 @@ export default function Expenses() {
         description: expenseName,
         expense_sum: Number(expenseAmount),
       });
-      refetchMonthsExpenses(numericMonth);
 
       resetForm();
       closeModal();
       alert("Expense updated successfully!");
+      refetch();
     } catch (err) {
       console.error("Error updating expense", monthsExpenseError);
       alert(monthsExpenseError || "Failed to update expense");

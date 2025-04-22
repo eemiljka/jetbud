@@ -48,19 +48,11 @@ export default function History() {
   const { daysAssets, daysAssetsIsLoading, daysAssetsError, fetchDaysAssets } =
     useGetOneDaysAssets();
 
-  const {
-    monthsExpenses,
-    monthsExpensesIsLoading,
-    monthsExpenseError,
-    refetchMonthsExpenses,
-  } = useGetOneMonthsExpenses();
+  const { monthsExpenses, monthsExpensesIsLoading, monthsExpenseError } =
+    useGetOneMonthsExpenses();
 
-  const {
-    monthsAssets,
-    monthsAssetsIsLoading,
-    monthsAssetError,
-    refetchMonthsAssets,
-  } = useGetOneMonthsAssets();
+  const { monthsAssets, monthsAssetsIsLoading, monthsAssetError } =
+    useGetOneMonthsAssets();
 
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedAssetYear, setSelectedAssetYear] = useState<number | null>(
@@ -122,20 +114,6 @@ export default function History() {
       fetchDaysAssets(selectedAssetDay);
     }
   }, [selectedAssetDay]);
-
-  // Fetch one months expenses whenever that one month is selected
-  useEffect(() => {
-    if (selectedMonth) {
-      refetchMonthsExpenses(selectedMonth);
-    }
-  }, [selectedMonth]);
-
-  // Fetch one months assets whenever that one month is selected
-  useEffect(() => {
-    if (selectedAssetMonth) {
-      refetchMonthsAssets(selectedAssetMonth);
-    }
-  }, [selectedAssetMonth]);
 
   if (yearsIsLoading) {
     return <p>Years loading...</p>;

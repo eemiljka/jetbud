@@ -1,9 +1,9 @@
 import { Asset, Expense, User } from '../types/DBTypes';
 // TODO: Generate apiHooks 
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useDeferredValue, useEffect, useState } from 'react';
 import axios from 'axios';
-import { headers } from 'next/headers';
+
 
   // Types
   interface YearData {
@@ -31,6 +31,8 @@ import { headers } from 'next/headers';
     description: string
     asset_sum: number
   }
+
+const month = new Date().toLocaleString("default", {month: "long"})
 
 
 /******** EXPENSES ********/ 
@@ -407,51 +409,78 @@ const useGetExpenseYears = () => {
     return {daysExpenses, daysExpensesIsLoading, daysExpensesError, fetchDaysExpenses}
   }
 
-  const useGetOneMonthsExpenses = () => {
+  const useGetOneMonthsExpenses = (month?: number) => {
     const [monthsExpenses, setMonthsExpenses] = useState<ExpenseData[]>([]);
     const [monthsExpensesIsLoading, setMonthsExpensesIsLoading] = useState(false);
     const [monthsExpenseError, setMonthsExpenseError] = useState<string | null>(null);
 
-    const fetchMonthsExpenses = async (month: any) => {
+    const fetchOneMonthsExpenses = useCallback(async () => {
+        if (month === null) return;
+        setMonthsExpensesIsLoading(true);
+        setMonthsExpenseError(null);
         try {
             const token = localStorage.getItem("token");
             const response = await axios.get("http://localhost:8080/months-expenses", {
-                params: { month },
+                params: {month},
                 headers: {Authorization: `Bearer ${token}`}
             })
-            console.log(response.data);
             setMonthsExpenses(response.data);
         } catch {
             setMonthsExpenseError("Failed to fetch month's expenses")
         } finally {
             setMonthsExpensesIsLoading(false);
         }
+    }, [month]);
+
+    useEffect(() => {
+        fetchOneMonthsExpenses();
+    }, [fetchOneMonthsExpenses]);
+
+    return {monthsExpenses, monthsExpensesIsLoading, monthsExpenseError, refetch: fetchOneMonthsExpenses}
+
     }
-    return {monthsExpenses, monthsExpensesIsLoading, monthsExpenseError, refetchMonthsExpenses: fetchMonthsExpenses}
-  }
+
+
 
   // assets
 
-  const useGetOneMonthsAssets = () => {
+  const useGetOneMonthsAssets = (month?: number) => {
     const [monthsAssets, setMonthsAssets] = useState<AssetData[]>([]);
     const [monthsAssetsIsLoading, setMonthsAssetsIsLoading] = useState(false);
     const [monthsAssetError, setMonthsAssetError] = useState<string | null>(null);
 
-    const fetchMonthsAssets = async (month: any) => {
-        try {
-            const token = localStorage.getItem("token");
-            const response = await axios.get("http://localhost:8080/months-assets", {
-                params: {month},
-                headers: {Authorization: `Bearer ${token}`}
-            })
-            setMonthsAssets(response.data);
-        } catch {
-            setMonthsAssetError("Failed to fetch month's assets")
-        } finally {
-            setMonthsAssetsIsLoading(false);
+    useEffect(() => {
+        if (month === null) return;
+        let cancelled = false;
+
+        const fetchMonthsAssets = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const response = await axios.get("http://localhost:8080/months-assets", {
+                    params: {month},
+                    headers: {Authorization: `Bearer ${token}`}
+                })
+                if (!cancelled) {
+                    setMonthsAssets(response.data);
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    setMonthsAssetError("Failed to fetch month's expenses")
+                }
+            } finally {
+                if (!cancelled) {
+                    setMonthsAssetsIsLoading(false);
+                }
+            }
         }
-    }
-    return {monthsAssets, monthsAssetsIsLoading, monthsAssetError, refetchMonthsAssets: fetchMonthsAssets}
+        fetchMonthsAssets();
+
+        return () => {
+            cancelled = true;
+        }
+    }, [month])
+    return {monthsAssets, monthsAssetsIsLoading, monthsAssetError}
+
   }
 
   const useGetAssetYears = () => {

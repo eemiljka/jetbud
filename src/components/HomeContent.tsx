@@ -16,6 +16,24 @@ import XCircleIcon from "@heroicons/react/20/solid/XCircleIcon";
 
 // HomeContent component
 const HomeContent: React.FC = () => {
+  // modal styles
+  const customStyles = {
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.75)",
+    },
+    content: {
+      position: "absolute",
+      top: "20%",
+      left: "50%",
+      transform: "translate(-50%, 0)",
+      width: "500px",
+      maxHeight: "90vh",
+      overflowY: "auto",
+      padding: "20px",
+      borderRadius: "8px",
+    },
+  };
+
   // Get the current month
   const date = new Date();
   const month = date.toLocaleString("default", { month: "long" });
@@ -26,20 +44,11 @@ const HomeContent: React.FC = () => {
     monthsExpenses,
     monthsExpensesIsLoading,
     monthsExpenseError,
-    refetchMonthsExpenses,
-  } = useGetOneMonthsExpenses();
+    refetch,
+  } = useGetOneMonthsExpenses(numericMonth);
 
-  const {
-    monthsAssets,
-    monthsAssetsIsLoading,
-    monthsAssetError,
-    refetchMonthsAssets,
-  } = useGetOneMonthsAssets();
-
-  useEffect(() => {
-    refetchMonthsExpenses(numericMonth);
-    refetchMonthsAssets(numericMonth);
-  }, [numericMonth, refetchMonthsExpenses, refetchMonthsAssets]);
+  const { monthsAssets, monthsAssetsIsLoading, monthsAssetError } =
+    useGetOneMonthsAssets(numericMonth);
 
   const { addExpense, expenseIsLoading, expenseError } = useAddExpense();
 
@@ -66,8 +75,12 @@ const HomeContent: React.FC = () => {
   const [addExpenseModalIsOpen, setAddExpenseModalIsOpen] =
     React.useState(false);
 
-  const [expenseName, setExpenseName] = useState("");
-  const [expenseAmount, setExpenseAmount] = useState("");
+  const [expenseEntries, setExpenseEntries] = useState([
+    { name: "", amount: "" },
+  ]);
+
+  /*const [expenseName, setExpenseName] = useState("");
+  const [expenseAmount, setExpenseAmount] = useState("");*/
 
   // Add asset modal state
   const [addAssetModalIsOpen, setAddAssetModalIsOpen] = React.useState(false);
@@ -88,7 +101,7 @@ const HomeContent: React.FC = () => {
   // Close add expense modal
   function closeAddExpenseModal() {
     setAddExpenseModalIsOpen(false);
-    resetForm();
+    setExpenseEntries([{ name: "", amount: "" }]);
   }
 
   // Close add asset modal
@@ -102,31 +115,45 @@ const HomeContent: React.FC = () => {
     setAssetAmount("");
   }
 
-  function resetForm() {
-    setExpenseName("");
-    setExpenseAmount("");
-  }
+  const handleExpenseChange = (
+    index: number,
+    field: "name" | "amount",
+    value: string
+  ) => {
+    const updated = [...expenseEntries];
+    updated[index][field] = value;
+    setExpenseEntries(updated);
+  };
+
+  const addAnotherExpenseField = () => {
+    setExpenseEntries([...expenseEntries, { name: "", amount: "" }]);
+  };
 
   const handleAddExpense = async () => {
-    if (!expenseName || !expenseAmount) {
-      alert("Please fill in all fields");
+    const validEntries = expenseEntries.filter(
+      (e) => e.name.trim() && e.amount.trim()
+    );
+
+    if (validEntries.length === 0) {
+      alert("Please fill in at least one expense");
       return;
     }
+
     try {
-      await addExpense({
-        expense_id: Date.now(),
-        description: expenseName,
-        expense_sum: Number(expenseAmount),
-      });
-
-      refetchMonthsExpenses(numericMonth);
-
-      resetForm();
+      for (const entry of validEntries) {
+        await addExpense({
+          expense_id: Date.now() + Math.random(),
+          description: entry.name,
+          expense_sum: Number(entry.amount),
+        });
+      }
+      refetch();
+      setExpenseEntries([{ name: "", amount: "" }]);
       closeAddExpenseModal();
-      alert("Expense added successfully!");
+      alert("Expenses added successfully");
     } catch (err) {
-      console.error("Error adding expense", expenseError);
-      alert(expenseError || "Failed to add expense");
+      console.error("Error adding expenses", expenseError);
+      alert(expenseError || "Failed to add expenses");
     }
   };
 
@@ -195,42 +222,48 @@ const HomeContent: React.FC = () => {
           {/* Add Expense Modal */}
           <Modal
             className={"bg-white rounded-lg shadow-md p-8"}
-            style={{
-              overlay: { backgroundColor: "rgba(0, 0, 0, 0.75)" },
-              content: {
-                color: "black",
-                width: "500px",
-                height: "250px",
-                margin: "auto",
-                padding: "20px",
-                borderRadius: "8px",
-              },
-            }}
+            style={customStyles}
             isOpen={addExpenseModalIsOpen}
             onRequestClose={closeAddExpenseModal}
             contentLabel="Add Expense"
           >
             {/* TODO: Add logic to be able to POST new expenses */}
             <h2>Add Expense</h2>
-            <input
-              type="text"
-              placeholder="Expense Name"
-              value={expenseName}
-              onChange={(e) => setExpenseName(e.target.value)}
-              className="border border-gray-300 rounded-md w-full p-2 mb-4"
-            />
-            <input
-              type="number"
-              placeholder="Expense Amount"
-              value={expenseAmount}
-              onChange={(e) => setExpenseAmount(e.target.value)}
-              className="border border-gray-300 rounded-md w-full p-2 mb-4"
-            />
-
+            {expenseEntries.map((entry, index) => (
+              <div key={index} className="mb-4">
+                <input
+                  type="text"
+                  placeholder="Expense Name"
+                  value={entry.name}
+                  onChange={(e) =>
+                    handleExpenseChange(index, "name", e.target.value)
+                  }
+                  className="border border-gray-300 rounded-md w-full p-2 mb-2"
+                />
+                <input
+                  type="number"
+                  placeholder="Expense Amount"
+                  value={entry.amount}
+                  onChange={(e) =>
+                    handleExpenseChange(index, "amount", e.target.value)
+                  }
+                  className="border border-gray-300 rounded-md w-full"
+                />
+              </div>
+            ))}
+            <div className="flex space-x-4 hover:underline">
+              <button
+                onClick={addAnotherExpenseField}
+                className="m-2 flex items-center"
+              >
+                <PlusCircleIcon className="2-5 h-5 text-zinc-500" />
+                Add another expense
+              </button>
+            </div>
             <div className="flex space-x-4 mt-4">
               <button
-                style={{ width: "112px" }}
-                className="bg-zinc-500 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-600"
+                style={{ width: "170px" }}
+                className="bg-zinc-500 text-white py-2 px-4 rounded-md flex items-center justify-center hover:bg-zinc-600"
                 onClick={closeAddExpenseModal}
               >
                 <XCircleIcon className="w-5 h-5 mr-2" />
@@ -238,13 +271,13 @@ const HomeContent: React.FC = () => {
               </button>
               <button
                 type="submit"
-                style={{ width: "112px" }}
-                className="bg-zinc-800 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-950"
+                style={{ width: "170px" }}
+                className="bg-zinc-800 text-white py-2 px-4 rounded-md flex items-center justify-center hover:bg-zinc-950"
                 onClick={handleAddExpense}
                 disabled={expenseIsLoading}
               >
                 <PlusCircleIcon className="w-5 h-5 mr-2" />
-                Add
+                Add expenses
               </button>
             </div>
           </Modal>
@@ -285,17 +318,7 @@ const HomeContent: React.FC = () => {
           {/* Add assets modal */}
           <Modal
             className={"bg-white rounded-lg shadow-md p-8"}
-            style={{
-              overlay: { backgroundColor: "rgba(0, 0, 0, 0.75)" },
-              content: {
-                color: "black",
-                width: "500px",
-                height: "250px",
-                margin: "auto",
-                padding: "20px",
-                borderRadius: "8px",
-              },
-            }}
+            style={customStyles}
             isOpen={addAssetModalIsOpen}
             onRequestClose={closeAddAssetModal}
             contentLabel="Add Asset"
@@ -317,10 +340,17 @@ const HomeContent: React.FC = () => {
               className="border border-gray-300 rounded-md w-full p-2 mb-4"
             />
 
+            <div className="flex space-x-4 hover:underline">
+              <button className="m-2 flex items-center">
+                <PlusCircleIcon className="2-5 h-5 text-zinc-500" />
+                Add another asset
+              </button>
+            </div>
+
             <div className="flex space-x-4 mt-4">
               <button
-                style={{ width: "112px" }}
-                className="bg-zinc-500 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-600"
+                style={{ width: "170px" }}
+                className="bg-zinc-500 text-white py-2 px-4 rounded-md flex items-center justify-center hover:bg-zinc-600"
                 onClick={closeAddAssetModal}
               >
                 <XCircleIcon className="w-5 h-5 mr-2" />
@@ -328,13 +358,13 @@ const HomeContent: React.FC = () => {
               </button>
               <button
                 type="submit"
-                style={{ width: "112px" }}
-                className="bg-zinc-800 text-white py-2 px-4 rounded-md flex items-center hover:bg-zinc-950"
+                style={{ width: "170px" }}
+                className="bg-zinc-800 text-white py-2 px-4 rounded-md flex items-center justify-center hover:bg-zinc-950"
                 onClick={handleAddAsset}
                 disabled={assetIsLoading}
               >
                 <PlusCircleIcon className="w-5 h-5 mr-2" />
-                Add
+                Add assets
               </button>
             </div>
           </Modal>
