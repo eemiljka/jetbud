@@ -1,31 +1,45 @@
-import React from "react";
+import { DownloadCSVProps } from "@/types/DBInterfaces";
 
-const DownloadCSV = ({ data, fileName }: any) => {
-  const convertToCSV = (objArray: any) => {
-    const array =
-      typeof objArray !== "object" ? JSON.parse(objArray) : objArray;
-    let str = "";
+const DownloadCSV = <T extends Record<string, unknown>>({
+  data,
+  fileName,
+}: DownloadCSVProps<T>): JSX.Element => {
+  const convertToCSV = <T extends Record<string, unknown>>(
+    arr: T[]
+  ): string => {
+    if (!arr.length) return "";
+    const headers = Object.keys(arr[0]);
+    const lines = [headers.join(",")];
 
-    for (let i = 0; i < array.length; i++) {
-      let line = "";
-      for (let index in array[i]) {
-        if (line !== "") line += ",";
-        line += array[i][index];
-      }
-      str += line + "\r\n";
+    // Helper to escape fields
+    const escapeValue = (val: unknown) => {
+      const s = String(val ?? "").replace(/"/g, '""');
+      return /[",\r\n]/.test(s) ? `"${s}"` : s;
+    };
+
+    // Data rows
+    for (const obj of arr) {
+      const row = headers.map((key) => escapeValue(obj[key]));
+      lines.push(row.join(","));
     }
-    return str;
+
+    return lines.join("\r\n") + "\r\n";
   };
+
   const downloadCSV = () => {
-    const csvData = new Blob([convertToCSV(data)], { type: "text/csv" });
-    const csvURL = URL.createObjectURL(csvData);
-    const link = document.createElement("a");
-    link.href = csvURL;
-    link.download = `${fileName}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const csvStr = convertToCSV(data);
+    const blob = new Blob([csvStr], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = `${fileName}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
+
   return <button onClick={downloadCSV}>Download CSV</button>;
 };
 
