@@ -11,6 +11,7 @@ import {
 import { Expense } from "@/types/DBTypes";
 import { useEffect, useState } from "react";
 import { PlusCircleIcon, XCircleIcon } from "@heroicons/react/20/solid";
+import DownloadCSV from "@/components/DownloadCSV";
 
 interface ExpenseData {
   expense_id: number;
@@ -152,6 +153,9 @@ export default function Expenses() {
                 </button>
               </div>
             ))}
+          <div>
+            <DownloadCSV data={monthsExpenses} fileName={`${month} expenses`} />
+          </div>
         </main>
       </div>
       <Modal
