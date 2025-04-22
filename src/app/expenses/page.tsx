@@ -10,7 +10,11 @@ import {
 } from "@/hoooks/apiHooks";
 import { Expense } from "@/types/DBTypes";
 import { useEffect, useState } from "react";
-import { PlusCircleIcon, XCircleIcon } from "@heroicons/react/20/solid";
+import {
+  ArrowDownTrayIcon,
+  PlusCircleIcon,
+  XCircleIcon,
+} from "@heroicons/react/20/solid";
 import DownloadCSV from "@/components/DownloadCSV";
 
 interface ExpenseData {
@@ -153,7 +157,8 @@ export default function Expenses() {
                 </button>
               </div>
             ))}
-          <div>
+          <div className="flex items-center hover:underline">
+            <ArrowDownTrayIcon className="w-5 h-5 mr-2" />
             <DownloadCSV data={monthsExpenses} fileName={`${month} expenses`} />
           </div>
         </main>

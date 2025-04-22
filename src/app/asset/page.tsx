@@ -1,5 +1,6 @@
 "use client";
 
+import DownloadCSV from "@/components/DownloadCSV";
 import Sidebar from "@/components/Sidebar";
 import {
   useDeleteAsset,
@@ -8,7 +9,11 @@ import {
   useUpdateAsset,
 } from "@/hoooks/apiHooks";
 import { Asset } from "@/types/DBTypes";
-import { PlusCircleIcon, XCircleIcon } from "@heroicons/react/20/solid";
+import {
+  PlusCircleIcon,
+  XCircleIcon,
+  ArrowDownTrayIcon,
+} from "@heroicons/react/20/solid";
 import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
 
@@ -146,6 +151,10 @@ export default function Assets() {
                 </button>
               </div>
             ))}
+          <div className="flex items-center hover:underline">
+            <ArrowDownTrayIcon className="w-5 h-5 mr-2" />
+            <DownloadCSV data={monthsAssets} fileName={`${month} assets`} />
+          </div>
         </main>
       </div>
       <Modal
