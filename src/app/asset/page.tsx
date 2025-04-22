@@ -23,18 +23,8 @@ export default function Assets() {
   const month = new Date().toLocaleString("default", { month: "long" });
   const numericMonth = new Date().getMonth() + 1;
 
-  const {
-    monthsAssets,
-    monthsAssetsIsLoading,
-    monthsAssetError,
-    refetchMonthsAssets,
-  } = useGetOneMonthsAssets();
-
-  const [assets, setAssets] = useState<Asset[]>(monthsAssets);
-
-  useEffect(() => {
-    refetchMonthsAssets(numericMonth);
-  }, [numericMonth, refetchMonthsAssets]);
+  const { monthsAssets, monthsAssetsIsLoading, monthsAssetError, refetch } =
+    useGetOneMonthsAssets(numericMonth);
 
   const [assetToDelete, setAssetToDelete] = useState<number | null>(null);
   const { deleteAsset } = useDeleteAsset();
@@ -73,10 +63,7 @@ export default function Assets() {
     try {
       setAssetToDelete(id);
       await deleteAsset(id);
-
-      setAssets((prevAssets) =>
-        prevAssets.filter((asset) => asset.asset_id !== id)
-      );
+      refetch();
       alert("Asset deleted successfully!");
     } catch (error) {
       console.error("Failed to delete asset:", error);
@@ -97,7 +84,7 @@ export default function Assets() {
         description: assetName,
         asset_sum: Number(assetAmount),
       });
-      refetchMonthsAssets(numericMonth);
+      refetch();
 
       resetForm();
       closeModal();

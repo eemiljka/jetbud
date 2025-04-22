@@ -5,8 +5,6 @@ import Modal from "react-modal";
 import Link from "next/link";
 import PlusCircleIcon from "@heroicons/react/20/solid/PlusCircleIcon";
 import {
-  useFetchAssets,
-  useFetchExpenses,
   useAddExpense,
   useAddAsset,
   useGetOneMonthsExpenses,
@@ -47,8 +45,12 @@ const HomeContent: React.FC = () => {
     refetch,
   } = useGetOneMonthsExpenses(numericMonth);
 
-  const { monthsAssets, monthsAssetsIsLoading, monthsAssetError } =
-    useGetOneMonthsAssets(numericMonth);
+  const {
+    monthsAssets,
+    monthsAssetsIsLoading,
+    monthsAssetError,
+    refetch: refetchAssets,
+  } = useGetOneMonthsAssets(numericMonth);
 
   const { addExpense, expenseIsLoading, expenseError } = useAddExpense();
 
@@ -79,14 +81,10 @@ const HomeContent: React.FC = () => {
     { name: "", amount: "" },
   ]);
 
-  /*const [expenseName, setExpenseName] = useState("");
-  const [expenseAmount, setExpenseAmount] = useState("");*/
+  const [assetEntries, setAssetEntries] = useState([{ name: "", amount: "" }]);
 
   // Add asset modal state
   const [addAssetModalIsOpen, setAddAssetModalIsOpen] = React.useState(false);
-
-  const [assetName, setAssetName] = useState("");
-  const [assetAmount, setAssetAmount] = useState("");
 
   // Open add expense modal
   function openAddExpenseModal() {
@@ -107,12 +105,7 @@ const HomeContent: React.FC = () => {
   // Close add asset modal
   function closeAddAssetModal() {
     setAddAssetModalIsOpen(false);
-    resetAssetForm();
-  }
-
-  function resetAssetForm() {
-    setAssetName("");
-    setAssetAmount("");
+    setAssetEntries([{ name: "", amount: "" }]);
   }
 
   const handleExpenseChange = (
@@ -157,26 +150,45 @@ const HomeContent: React.FC = () => {
     }
   };
 
+  const handleAssetChange = (
+    index: number,
+    field: "name" | "amount",
+    value: string
+  ) => {
+    const updated = [...assetEntries];
+    updated[index][field] = value;
+    setAssetEntries(updated);
+  };
+
+  const addAnotherAssetField = async () => {
+    setAssetEntries([...assetEntries, { name: "", amount: "" }]);
+  };
+
   const handleAddAsset = async () => {
-    if (!assetName || !assetAmount) {
-      alert("Please fill all the fields");
+    const validEntries = assetEntries.filter(
+      (e) => e.name.trim() && e.amount.trim()
+    );
+
+    if (validEntries.length === 0) {
+      alert("Please fill in at least one asset");
       return;
     }
+
     try {
-      await addAsset({
-        asset_id: Date.now(),
-        description: assetName,
-        asset_sum: Number(assetAmount),
-      });
-
-      refetchMonthsAssets(numericMonth);
-
-      resetAssetForm();
+      for (const entry of validEntries) {
+        await addAsset({
+          asset_id: Date.now() + Math.random(),
+          description: entry.name,
+          asset_sum: Number(entry.amount),
+        });
+      }
+      refetchAssets();
+      setAssetEntries([{ name: "", amount: "" }]);
       closeAddAssetModal();
-      alert("Asset added successfully!");
+      alert("Assets added successfully");
     } catch (err) {
-      console.error("Error adding asset", assetError);
-      alert(assetError || "Failed to add asset");
+      console.error("Error assind assets", assetError);
+      alert(assetError || "Failed to add expenses");
     }
   };
 
@@ -325,23 +337,33 @@ const HomeContent: React.FC = () => {
           >
             {/* TODO: Add logic to be able to POST new assets */}
             <h2>Add Asset</h2>
-            <input
-              type="text"
-              placeholder="Asset Name"
-              value={assetName}
-              onChange={(e) => setAssetName(e.target.value)}
-              className="border border-gray-300 rounded-md w-full p-2 mb-4"
-            />
-            <input
-              type="number"
-              placeholder="Asset Amount"
-              value={assetAmount}
-              onChange={(e) => setAssetAmount(e.target.value)}
-              className="border border-gray-300 rounded-md w-full p-2 mb-4"
-            />
-
+            {assetEntries.map((entry, index) => (
+              <div key={index} className="mb-4">
+                <input
+                  type="text"
+                  placeholder="Asset Name"
+                  value={entry.name}
+                  onChange={(e) =>
+                    handleAssetChange(index, "name", e.target.value)
+                  }
+                  className="border border-gray-300 rounded-md w-full p-2 mb-2"
+                />
+                <input
+                  type="number"
+                  placeholder="Asset Amount"
+                  value={entry.amount}
+                  onChange={(e) =>
+                    handleAssetChange(index, "amount", e.target.value)
+                  }
+                  className="border border-gray-300 rounded-md w-full"
+                />
+              </div>
+            ))}
             <div className="flex space-x-4 hover:underline">
-              <button className="m-2 flex items-center">
+              <button
+                onClick={addAnotherAssetField}
+                className="m-2 flex items-center"
+              >
                 <PlusCircleIcon className="2-5 h-5 text-zinc-500" />
                 Add another asset
               </button>
