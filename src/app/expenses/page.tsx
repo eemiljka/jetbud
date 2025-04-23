@@ -159,7 +159,14 @@ export default function Expenses() {
             ))}
           <div className="flex items-center hover:underline">
             <ArrowDownTrayIcon className="w-5 h-5 mr-2" />
-            <DownloadCSV data={monthsExpenses} fileName={`${month} expenses`} />
+            <DownloadCSV
+              data={monthsExpenses.map((expense) => ({
+                expense_id: expense.expense_id,
+                description: expense.description,
+                expense_sum: expense.expense_sum,
+              }))}
+              fileName={`${month} expenses`}
+            />
           </div>
         </main>
       </div>

@@ -14,7 +14,8 @@ import {
   useGetOneDaysAssets,
   useGetOneMonthsAssets,
 } from "@/hoooks/apiHooks";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { ArrowDownTrayIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
+import DownloadCSV from "@/components/DownloadCSV";
 
 export default function History() {
   const { years, yearsIsLoading, yearsError, fetchYears } =
@@ -225,28 +226,40 @@ export default function History() {
 
         {/* Display one day's expenses when one day is selected */}
         {selectedDay && (
-          <div className="mt-10">
-            <h3 className="text-xl font-semibold mb-4">
-              Expense logs made on {selectedDay}.
-            </h3>
-            {daysExpensesIsLoading ? (
-              <p>Loading expenses...</p>
-            ) : daysExpensesError ? (
-              <p>Error: {daysExpensesError}</p>
-            ) : (
-              daysExpenses.map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-white rounded-lg shadow-md p-5 mb-2 hover:underline"
-                >
-                  <h3>{item.description}</h3>
-                  <h4>{item.expense_sum}</h4>
-                </div>
-              ))
-            )}
+          <div>
+            <div className="mt-10">
+              <h3 className="text-xl font-semibold mb-4">
+                Expense logs made on {selectedDay}.
+              </h3>
+              {daysExpensesIsLoading ? (
+                <p>Loading expenses...</p>
+              ) : daysExpensesError ? (
+                <p>Error: {daysExpensesError}</p>
+              ) : (
+                daysExpenses.map((item, index) => (
+                  <div
+                    key={index}
+                    className="bg-white rounded-lg shadow-md p-5 mb-2 hover:underline"
+                  >
+                    <h3>{item.description}</h3>
+                    <h4>{item.expense_sum}</h4>
+                  </div>
+                ))
+              )}
+              <div className="flex items-center hover:underline">
+                <ArrowDownTrayIcon className="w-5 h-5 mr-2" />
+                <DownloadCSV
+                  fileName={`${selectedMonth}_${selectedDay}_${selectedYear}`}
+                  data={daysExpenses.map((expense) => ({
+                    description: expense.description,
+                    expense_sum: expense.expense_sum,
+                  }))}
+                />
+              </div>
+            </div>
           </div>
         )}
-        <h3 className="mt-2 mb-2">Assets</h3>
+        <h3 className="mt-10 mb-2">Assets</h3>
 
         <div>
           {assetYears.map((item) => (
@@ -328,25 +341,38 @@ export default function History() {
 
         {/* Display one day's expenses when one day is selected */}
         {selectedAssetDay && (
-          <div className="mt-10">
-            <h3 className="text-xl font-semibold mb-4">
-              Asset logs made on {selectedAssetDay}.
-            </h3>
-            {daysAssetsIsLoading ? (
-              <p>Loading expenses...</p>
-            ) : daysAssetsError ? (
-              <p>Error: {daysAssetsError}</p>
-            ) : (
-              daysAssets.map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-white rounded-lg shadow-md p-5 mb-2 hover:underline"
-                >
-                  <h3>{item.description}</h3>
-                  <h4>{item.asset_sum}</h4>
-                </div>
-              ))
-            )}
+          <div>
+            <div className="mt-10">
+              <h3 className="text-xl font-semibold mb-4">
+                Asset logs made on {selectedAssetMonth} / {selectedAssetDay} /{" "}
+                {selectedAssetYear}.
+              </h3>
+              {daysAssetsIsLoading ? (
+                <p>Loading expenses...</p>
+              ) : daysAssetsError ? (
+                <p>Error: {daysAssetsError}</p>
+              ) : (
+                daysAssets.map((item, index) => (
+                  <div
+                    key={index}
+                    className="bg-white rounded-lg shadow-md p-5 mb-2 hover:underline"
+                  >
+                    <h3>{item.description}</h3>
+                    <h4>{item.asset_sum}</h4>
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="flex items-center hover:underline">
+              <ArrowDownTrayIcon className="w-5 h-5 mr-2" />
+              <DownloadCSV
+                data={daysAssets.map((asset) => ({
+                  description: asset.description,
+                  asset_sum: asset.asset_sum,
+                }))}
+                fileName={`${selectedAssetMonth}_${selectedAssetDay}_${selectedAssetYear}_assets`}
+              />
+            </div>
           </div>
         )}
       </main>
