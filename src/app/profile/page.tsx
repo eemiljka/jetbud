@@ -2,13 +2,14 @@
 
 import Sidebar from "@/components/Sidebar";
 import Divider from "@/components/Divider";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { useGetUserInfo } from "@/hoooks/apiHooks";
 import { User } from "@/types/DBTypes";
 import UpdateUsernameForm from "../username/page";
 import UpdatePasswordForm from "../password/page";
+import UpdateEmailForm from "../email/page";
 
 const Profile: React.FC = () => {
   const { profileInfo, profileIsLoading, profileError, refetchUserInfo } =
@@ -18,6 +19,9 @@ const Profile: React.FC = () => {
     React.useState(false);
 
   const [changePasswordModalIsOpen, setChangePasswordModalIsOpen] =
+    React.useState(false);
+
+  const [changeEmailModalIsOpen, setChangeEmailModalIsOpen] =
     React.useState(false);
 
   function openChangeUsernameModal() {
@@ -34,6 +38,14 @@ const Profile: React.FC = () => {
 
   function closeChangePasswordModal() {
     setChangePasswordModalIsOpen(false);
+  }
+
+  function openChangeEmailModal() {
+    setChangeEmailModalIsOpen(true);
+  }
+
+  function closeChangeEmailModal() {
+    setChangeEmailModalIsOpen(false);
   }
 
   useEffect(() => {
@@ -121,9 +133,23 @@ const Profile: React.FC = () => {
                     <div key={user.user_id}>{user.email}</div>
                   ))}
               </h3>
-              <button className="hover:bg-zinc-100 rounded-md p-1">
+              <button
+                onClick={openChangeEmailModal}
+                className="hover:bg-zinc-100 rounded-md p-1"
+              >
                 <PencilIcon className="w-5 h-5 text-zinc-600" />
               </button>
+              <Modal
+                className={"bg-white rounded-lg shadow-md p-8"}
+                style={customStyles}
+                isOpen={changeEmailModalIsOpen}
+                onRequestClose={closeChangeEmailModal}
+                contentLabel="Change Email"
+              >
+                <UpdateEmailForm
+                  closeChangeEmailModal={closeChangeEmailModal}
+                />
+              </Modal>
             </div>
             <Divider />
             <p className="mt-10">Password</p>

@@ -229,7 +229,8 @@ export default function History() {
           <div>
             <div className="mt-10">
               <h3 className="text-xl font-semibold mb-4">
-                Expense logs made on {selectedDay}.
+                Expense logs made on {selectedMonth} / {selectedDay} /{" "}
+                {selectedYear}.
               </h3>
               {daysExpensesIsLoading ? (
                 <p>Loading expenses...</p>

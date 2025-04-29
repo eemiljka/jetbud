@@ -302,6 +302,38 @@ const useUpdatePassword = () => {
     return {updatePassword, passwordIsLoading, passwordError, successMessage}
 }
 
+// change email
+const useUpdateEmail = () => {
+    const [emailIsLoading, setEmailIsLoading] = useState(false);
+    const [emailError, setEmailError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState("");
+
+    const updateEmail = async (newEmail: string) => {
+        setEmailError(null);
+        setEmailIsLoading(true);
+        setSuccessMessage("");
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.put("http://localhost:8080/email", {
+                email: newEmail
+            },
+        {headers: {Authorization: `Bearer ${token}`}
+    })
+    setSuccessMessage(response.data.message);
+        } catch (err) {
+            if (axios.isAxiosError(err) && err.response) {
+                setEmailError(err.response.data || "Failed to update email. Please try again.")
+            } else {
+                setEmailError("Failed to update email. Please try again.")
+            }
+        } finally {
+            setEmailIsLoading(false);
+        }
+    }
+    return {emailIsLoading, emailError, successMessage, updateEmail}
+}
+
 
 // History
 
@@ -657,5 +689,6 @@ export {
     useGetAssetDays,
     useGetAssetMonths,
     useGetOneDaysAssets,
+    useUpdateEmail
 };
 
